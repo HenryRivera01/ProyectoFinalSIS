@@ -26,7 +26,7 @@ export const Explore = () => {
       <Navbar />
       <h1>Explore Properties</h1>
       <PropertyFilter filters={filters} onChange={setFilters} />
-
+      <button onClick={()=>setFilters(initialFilters)}>Clear Filters</button>
       <div>
         {filteredProperties.map((p) => (
           <PropertyCard key={p.id} property={p} />

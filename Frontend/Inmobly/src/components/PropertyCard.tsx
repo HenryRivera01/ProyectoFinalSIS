@@ -20,7 +20,7 @@ export const PropertyCard = ({ property, onClick }:Props) => {
 
       <div >
         <div>{property.location} - {property.neighborhood}</div>
-        <h3>{property.type} • {property.operation}</h3>
+        <h3>{property.type} in {property.operation}</h3>
         <p>{property.address}</p>
 
         <div >
