@@ -8,32 +8,35 @@ type Props = {
 
 
 
-export const PropertyCard = ({ property, onClick }:Props) => {
+export const PropertyCard = ({ property, onClick }: Props) => {
   return (
-    <div
-      onClick={onClick}
-    >
-      <img
-        src={property.img}
-        alt={property.address}
-      />
+    <article onClick={onClick}>
+      <figure>
+        <img
+          src={property.pictures[0]}
+          alt={`Imagen de la propiedad en ${property.address}`}
+        />
+        <figcaption>{property.address}</figcaption>
+      </figure>
 
-      <div >
-        <div>{property.location} - {property.neighborhood}</div>
-        <h3>{property.type} in {property.operation}</h3>
-        <p>{property.address}</p>
+      <section>
+        <header>
+          <p>{property.city}, {property.neighborhood}</p>
+          <h3>{property.type} en {property.operation}</h3>
+        </header>
 
-        <div >
-          <span>{property.bedrooms} bd</span>
-          <span>{property.bathrooms} ba</span>
-          <span>{property.squareMeters} m²</span>
-        </div>
+        <address>{property.address}</address>
 
-        <div>
-          ${property.price.toLocaleString()}
-        </div>
-      </div>
-    </div>
+        <ul>
+          <li>{property.bedrooms} hab</li>
+          <li>{property.bathrooms} baños</li>
+          <li>{property.area} m²</li>
+        </ul>
+
+        <footer>
+          <strong>${property.price.toLocaleString()}</strong>
+        </footer>
+      </section>
+    </article>
   );
 };
-

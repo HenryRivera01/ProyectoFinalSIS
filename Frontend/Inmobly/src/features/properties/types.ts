@@ -1,6 +1,7 @@
 export type Property = {
-  id: string;
-  location: string;
+  id: number;
+  department: string;
+  city: string;
   address: string;
   neighborhood: string;
   type: string;
@@ -8,7 +9,7 @@ export type Property = {
   bathrooms: number;
   operation: string;
   price: number;
-  squareMeters: number;
+  area: number;
   description: string;
-  img: string;
+  pictures: string[];
 };
