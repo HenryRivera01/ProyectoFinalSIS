@@ -13,8 +13,8 @@ import java.util.List;
 @Getter
 public class Department {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    private Integer id;
     public String name;
 
     @OneToMany( mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)

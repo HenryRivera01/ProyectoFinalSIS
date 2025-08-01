@@ -1,6 +1,7 @@
 package com.juan.property.property_recommendation.property;
 
 import com.juan.property.property_recommendation.auth.service.AuthService;
+import com.juan.property.property_recommendation.property.dto.PropertyFilterRequest;
 import com.juan.property.property_recommendation.property.dto.PropertyRequest;
 import com.juan.property.property_recommendation.property.dto.PropertyResponse;
 import com.juan.property.property_recommendation.property.service.PropertyService;
@@ -37,5 +38,10 @@ public class PropertyController {
     ){
         User user = requiredAuth(token);
         return propertyService.register(propertyRequest);
+    }
+
+    @GetMapping("/filter")
+    public List<PropertyResponse> filterProperties(PropertyFilterRequest filter) {
+        return propertyService.filter(filter);
     }
 }

@@ -41,19 +41,19 @@ public class PropertyRecommendationApplication {
 //					.build();
 //			providerRepository.save(provider);
 
-			var department = Department.builder()
-					.name("Cundinamarca")
-					.build();
-
-			var city = City.builder()
-					.name("Bogotá")
-					.build();
-
-
-			city.setDepartment(department);
-			department.setCities(List.of(city));
-
-			departmentRepository.save(department);
+//			var department = Department.builder()
+//					.name("Cundinamarca")
+//					.build();
+//
+//			var city = City.builder()
+//					.name("Bogotá")
+//					.build();
+//
+//
+//			city.setDepartment(department);
+//			department.setCities(List.of(city));
+//
+//			departmentRepository.save(department);
 
 
 		};

@@ -2,6 +2,7 @@ package com.juan.property.property_recommendation.property.dto;
 
 import com.juan.property.property_recommendation.location.City;
 import com.juan.property.property_recommendation.property.OperationType;
+import com.juan.property.property_recommendation.property.PropertyType;
 import com.juan.property.property_recommendation.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class PropertyRequest {
     private String image;
     private Integer numberOfBathrooms;
     private Integer numberOfBedRooms;
+    private PropertyType propertyType;
     private Integer cityId;
     private Integer ownerId;
 }

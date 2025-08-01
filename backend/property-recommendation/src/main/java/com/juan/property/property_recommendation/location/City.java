@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 public class City {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
     private String name;
 

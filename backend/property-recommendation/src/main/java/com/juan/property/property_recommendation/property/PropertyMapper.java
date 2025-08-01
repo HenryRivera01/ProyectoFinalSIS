@@ -23,6 +23,7 @@ public class PropertyMapper {
                 .city(property.getCity())
                 .ownerPhoneNumber(property.getUser().getPhoneNumber())
                 .ownerEmail(property.getUser().getEmail())
+                .propertyType(property.getPropertyType())
                 .build();
     }
 
@@ -37,6 +38,7 @@ public class PropertyMapper {
                 .price(propertyRequest.getPrice())
                 .image(propertyRequest.getImage())
                 .address(propertyRequest.getAddress())
+                .propertyType(propertyRequest.getPropertyType())
                 .build();
     }
 }

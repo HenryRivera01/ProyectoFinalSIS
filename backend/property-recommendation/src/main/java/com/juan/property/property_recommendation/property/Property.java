@@ -26,8 +26,7 @@ public class Property {
     private String image;
     private Integer numberOfBathrooms;
     private Integer getNumberOfBedRooms;
-
-    public PropertyType realEstateType;
+    public PropertyType propertyType;
 
     @ManyToOne()
     @JoinColumn(name="city_id")

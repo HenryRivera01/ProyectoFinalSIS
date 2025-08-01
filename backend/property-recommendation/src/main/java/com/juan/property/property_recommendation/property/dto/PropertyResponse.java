@@ -2,6 +2,7 @@ package com.juan.property.property_recommendation.property.dto;
 
 import com.juan.property.property_recommendation.location.City;
 import com.juan.property.property_recommendation.property.OperationType;
+import com.juan.property.property_recommendation.property.PropertyType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,5 +24,6 @@ public class PropertyResponse {
     private City city;
     private String ownerEmail;
     private Long ownerPhoneNumber;
+    private PropertyType propertyType;
 
 }

@@ -4,6 +4,7 @@ import com.juan.property.property_recommendation.location.City;
 import com.juan.property.property_recommendation.location.CityRepository;
 import com.juan.property.property_recommendation.property.PropertyMapper;
 import com.juan.property.property_recommendation.property.PropertyRepository;
+import com.juan.property.property_recommendation.property.dto.PropertyFilterRequest;
 import com.juan.property.property_recommendation.property.dto.PropertyRequest;
 import com.juan.property.property_recommendation.property.dto.PropertyResponse;
 import com.juan.property.property_recommendation.user.User;
@@ -47,6 +48,21 @@ public class PropertyService implements  IPropertyService{
         newProperty.setCity(city.get());
        propertyRepository.save(newProperty);
         return propertyMapper.propertyToDto(newProperty);
+    }
+
+    public List<PropertyResponse> filter(PropertyFilterRequest filter) {
+        return propertyRepository.findAll().stream()
+                .filter(p -> filter.getMinPrice() == null || p.getPrice() >= filter.getMinPrice())
+                .filter(p -> filter.getMaxPrice() == null || p.getPrice() <= filter.getMaxPrice())
+                .filter(p -> filter.getMinArea() == null || p.getArea() >= filter.getMinArea())
+                .filter(p -> filter.getMaxArea() == null || p.getArea() <= filter.getMaxArea())
+                .filter(p -> filter.getNumberOfBathrooms() == null || p.getNumberOfBathrooms().equals(filter.getNumberOfBathrooms()))
+                .filter(p -> filter.getNumberOfBedRooms() == null || p.getGetNumberOfBedRooms().equals(filter.getNumberOfBedRooms()))
+                .filter(p -> filter.getCityId() == null || (p.getCity() != null && p.getCity().getId().equals(filter.getCityId())))
+                .filter(p -> filter.getPropertyType() == null || p.getPropertyType().equals(filter.getPropertyType()))
+                .filter(p -> filter.getOperationType() == null || p.getOperationType().equals(filter.getOperationType()))
+                .map(propertyMapper::propertyToDto)
+                .collect(Collectors.toList());
     }
 
 
