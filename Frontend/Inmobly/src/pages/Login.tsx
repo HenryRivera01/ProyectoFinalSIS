@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Navbar } from '../components/Navbar';
 
 interface LoginData {
   email: string;
@@ -47,6 +48,7 @@ const Login = () => {
 
   return (
     <main>
+    < Navbar />
       <h1>Iniciar Sesión</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Correo electrónico:</label>

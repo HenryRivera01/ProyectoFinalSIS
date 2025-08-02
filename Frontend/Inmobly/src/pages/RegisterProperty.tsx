@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Navbar } from "../components/Navbar";
 
 type Department = {
   id: number;
@@ -152,108 +153,111 @@ export const RegisterProperty = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <textarea
-        name="description"
-        placeholder="Descripción"
-        value={formData.description}
-        onChange={handleChange}
-      />
-      <input
-        name="price"
-        placeholder="Precio"
-        value={formData.price}
-        onChange={handleChange}
-      />
-      <select name="type" value={formData.type} onChange={handleChange}>
-        <option value="">Tipo de operación</option>
-        <option value="venta">Venta</option>
-        <option value="arriendo">Arriendo</option>
-      </select>
+    <main>
+      <Navbar />
+      <form onSubmit={handleSubmit}>
+        <textarea
+          name="description"
+          placeholder="Descripción"
+          value={formData.description}
+          onChange={handleChange}
+        />
+        <input
+          name="price"
+          placeholder="Precio"
+          value={formData.price}
+          onChange={handleChange}
+        />
+        <select name="type" value={formData.type} onChange={handleChange}>
+          <option value="">Tipo de operación</option>
+          <option value="venta">Venta</option>
+          <option value="arriendo">Arriendo</option>
+        </select>
 
-      <select
-        name="department"
-        onChange={(e) => {
-          const dep = departments.find(
-            (d) => d.id === parseInt(e.target.value)
-          );
-          setFormData((prev) => ({
-            ...prev,
-            department: dep || null,
-            city: null,
-          }));
-        }}
-        value={formData.department?.id || ""}
-      >
-        <option value="">Departamento</option>
-        {departments.map((dep) => (
-          <option key={dep.id} value={dep.id}>
-            {dep.name}
-          </option>
-        ))}
-      </select>
-
-      <select
-        name="city"
-        value={formData.city?.id || ""}
-        onChange={(e) => {
-          const city = cities.find((c) => c.id === parseInt(e.target.value));
-          setFormData((prev) => ({ ...prev, city: city || null }));
-        }}
-      >
-        <option value="">Ciudad</option>
-        {cities.map((city) => (
-          <option key={city.id} value={city.id}>
-            {city.name}
-          </option>
-        ))}
-      </select>
-
-      <input
-        name="address"
-        placeholder="Dirección"
-        value={formData.address}
-        onChange={handleChange}
-      />
-      <input
-        name="area"
-        placeholder="Área (m²)"
-        value={formData.area}
-        onChange={handleChange}
-      />
-      <input
-        name="rooms"
-        placeholder="Habitaciones"
-        value={formData.rooms}
-        onChange={handleChange}
-      />
-      <input
-        name="bathrooms"
-        placeholder="Baños"
-        value={formData.bathrooms}
-        onChange={handleChange}
-      />
-
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={handleImageChange}
-      />
-      {formData.images.length > 0 && (
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-          {formData.images.map((img, i) => (
-            <img
-              key={i}
-              src={URL.createObjectURL(img)}
-              alt="preview"
-              width={100}
-            />
+        <select
+          name="department"
+          onChange={(e) => {
+            const dep = departments.find(
+              (d) => d.id === parseInt(e.target.value)
+            );
+            setFormData((prev) => ({
+              ...prev,
+              department: dep || null,
+              city: null,
+            }));
+          }}
+          value={formData.department?.id || ""}
+        >
+          <option value="">Departamento</option>
+          {departments.map((dep) => (
+            <option key={dep.id} value={dep.id}>
+              {dep.name}
+            </option>
           ))}
-        </div>
-      )}
+        </select>
 
-      <button type="submit">Registrar propiedad</button>
-    </form>
+        <select
+          name="city"
+          value={formData.city?.id || ""}
+          onChange={(e) => {
+            const city = cities.find((c) => c.id === parseInt(e.target.value));
+            setFormData((prev) => ({ ...prev, city: city || null }));
+          }}
+        >
+          <option value="">Ciudad</option>
+          {cities.map((city) => (
+            <option key={city.id} value={city.id}>
+              {city.name}
+            </option>
+          ))}
+        </select>
+
+        <input
+          name="address"
+          placeholder="Dirección"
+          value={formData.address}
+          onChange={handleChange}
+        />
+        <input
+          name="area"
+          placeholder="Área (m²)"
+          value={formData.area}
+          onChange={handleChange}
+        />
+        <input
+          name="rooms"
+          placeholder="Habitaciones"
+          value={formData.rooms}
+          onChange={handleChange}
+        />
+        <input
+          name="bathrooms"
+          placeholder="Baños"
+          value={formData.bathrooms}
+          onChange={handleChange}
+        />
+
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleImageChange}
+        />
+        {formData.images.length > 0 && (
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            {formData.images.map((img, i) => (
+              <img
+                key={i}
+                src={URL.createObjectURL(img)}
+                alt="preview"
+                width={100}
+              />
+            ))}
+          </div>
+        )}
+
+        <button type="submit">Registrar propiedad</button>
+      </form>
+    </main>
   );
 };

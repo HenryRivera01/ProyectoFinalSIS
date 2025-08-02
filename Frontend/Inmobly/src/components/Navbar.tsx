@@ -1,14 +1,13 @@
+import { Link } from "react-router-dom";
 
 export const Navbar = () => {
   return (
     <nav>
-        <h1>Inmobly</h1>
-        <ul>
-            <li>Home</li>
-            <li>Sell</li>
-            <li>Buy</li>
-            <li>Rent</li>
-        </ul>
+      <Link to="/">Home</Link>
+      <Link to="/login">Log in</Link>
+      <Link to="/register">Sign up</Link>
+      <Link to="/new-property">Register Property</Link>
+      <Link to="/explore">Explore Properties</Link>
     </nav>
-  )
-}
+  );
+};

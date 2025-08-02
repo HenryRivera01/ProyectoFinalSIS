@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navbar } from "../components/Navbar";
 
 interface RegisterFormData {
   documentType: string;
@@ -70,6 +71,7 @@ export default function Register() {
 
   return (
     <main>
+        <Navbar />
       <h1>Registro de Usuario</h1>
       <form onSubmit={handleSubmit}>
         <label>
