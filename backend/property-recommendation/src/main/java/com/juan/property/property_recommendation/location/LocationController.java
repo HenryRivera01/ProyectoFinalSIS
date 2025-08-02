@@ -4,6 +4,8 @@ import com.juan.property.property_recommendation.location.dto.CityResponse;
 import com.juan.property.property_recommendation.location.dto.DepartmentResponse;
 import com.juan.property.property_recommendation.location.service.LocationService;
 import lombok.AllArgsConstructor;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/location")
 @AllArgsConstructor
+@CrossOrigin(origins = "*")
 public class LocationController {
 
     private final LocationService locationService;

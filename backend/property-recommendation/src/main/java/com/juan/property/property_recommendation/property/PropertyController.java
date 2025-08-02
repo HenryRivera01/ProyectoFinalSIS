@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/properties")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class PropertyController {
 
     private final AuthService authService;

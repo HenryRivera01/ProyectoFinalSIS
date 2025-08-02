@@ -39,7 +39,7 @@ public class PropertyService implements  IPropertyService{
         if(city.isEmpty()) {
             throw new RuntimeException("The city  does not exist");
         }
-        Optional<User> user = userRepository.findById(propertyRequest.getOwnerId());
+        Optional<User> user = userRepository.findByEmail(propertyRequest.getOwnerEmail());
         if(user.isEmpty()) {
             throw new RuntimeException("The user  does not exist");
         }
