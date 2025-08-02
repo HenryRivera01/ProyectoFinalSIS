@@ -24,7 +24,7 @@ const Login = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/properties', {
+      const response = await fetch('http://localhost:8080/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const Login = () => {
           required
           onChange={handleChange}
         />
-
+        
         <label htmlFor="password">Contraseña:</label>
         <input
           type="password"

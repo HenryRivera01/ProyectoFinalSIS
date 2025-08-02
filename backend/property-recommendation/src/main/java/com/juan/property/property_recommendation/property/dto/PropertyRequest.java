@@ -25,5 +25,5 @@ public class PropertyRequest {
     private Integer numberOfBedRooms;
     private PropertyType propertyType;
     private Integer cityId;
-    private Integer ownerId;
+    private String ownerEmail;
 }
