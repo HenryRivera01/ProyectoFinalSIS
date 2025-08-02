@@ -8,3 +8,4 @@ public interface SessionTokenRepository extends JpaRepository<SessionToken, Stri
 
     Optional<SessionToken> findByToken(String token);
 }
+

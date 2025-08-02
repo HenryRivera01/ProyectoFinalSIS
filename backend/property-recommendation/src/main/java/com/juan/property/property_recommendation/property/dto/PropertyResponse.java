@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class PropertyResponse {
     private String address;
     private Double price;
     private Double area;
-    private String image;
+    private List<String> images;
     private Integer numberOfBathrooms;
     private Integer getNumberOfBedRooms;
     private City city;

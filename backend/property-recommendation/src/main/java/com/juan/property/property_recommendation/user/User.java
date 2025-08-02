@@ -1,5 +1,6 @@
 package com.juan.property.property_recommendation.user;
 
+import com.juan.property.property_recommendation.auth.SessionToken;
 import com.juan.property.property_recommendation.property.Property;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,4 +29,6 @@ public class User {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Property> properties;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    private List<SessionToken> sessionToken;
 }

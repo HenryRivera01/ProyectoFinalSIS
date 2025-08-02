@@ -18,7 +18,7 @@ public class PropertyMapper {
                 .operationType(property.getOperationType())
                 .area(property.getArea())
                 .price(property.getPrice())
-                .image(property.getImage())
+                .images(property.getImages())
                 .address(property.getAddress())
                 .city(property.getCity())
                 .ownerPhoneNumber(property.getUser().getPhoneNumber())
@@ -36,7 +36,7 @@ public class PropertyMapper {
                 .operationType(propertyRequest.getOperationType())
                 .area(propertyRequest.getArea())
                 .price(propertyRequest.getPrice())
-                .image(propertyRequest.getImage())
+                .images(propertyRequest.getImages())
                 .address(propertyRequest.getAddress())
                 .propertyType(propertyRequest.getPropertyType())
                 .build();

@@ -45,6 +45,9 @@ public class AuthService implements  IAuthService {
             throw new RuntimeException("Invalid credentials");
         }
 
+
+
+
         String token = UUID.randomUUID().toString();
         SessionToken session = new SessionToken();
         session.setToken(token);

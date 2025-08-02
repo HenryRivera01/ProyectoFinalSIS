@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Builder
 @AllArgsConstructor
@@ -20,10 +22,9 @@ public class PropertyRequest {
     private String address;
     private Double price;
     private Double area;
-    private String image;
+    private List<String> images;
     private Integer numberOfBathrooms;
     private Integer numberOfBedRooms;
     private PropertyType propertyType;
     private Integer cityId;
-    private String ownerEmail;
 }

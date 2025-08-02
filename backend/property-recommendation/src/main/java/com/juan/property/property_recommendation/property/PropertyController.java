@@ -38,7 +38,7 @@ public class PropertyController {
             @RequestBody PropertyRequest propertyRequest
     ){
         User user = requiredAuth(token);
-        return propertyService.register(propertyRequest);
+        return propertyService.register(propertyRequest, user);
     }
 
     @GetMapping("/filter")

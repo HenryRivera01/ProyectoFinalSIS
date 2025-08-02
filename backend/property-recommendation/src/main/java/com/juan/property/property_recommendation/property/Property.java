@@ -23,7 +23,7 @@ public class Property {
     private String address;
     private Double price;
     private Double area;
-    private String image;
+    private List<String> images;
     private Integer numberOfBathrooms;
     private Integer getNumberOfBedRooms;
     public PropertyType propertyType;

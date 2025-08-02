@@ -34,17 +34,14 @@ public class PropertyService implements  IPropertyService{
     }
 
     @Override
-    public PropertyResponse register(PropertyRequest propertyRequest) {
+    public PropertyResponse register(PropertyRequest propertyRequest, User user) {
         Optional<City> city = cityRepository.findById(propertyRequest.getCityId());
         if(city.isEmpty()) {
             throw new RuntimeException("The city  does not exist");
         }
-        Optional<User> user = userRepository.findByEmail(propertyRequest.getOwnerEmail());
-        if(user.isEmpty()) {
-            throw new RuntimeException("The user  does not exist");
-        }
        var newProperty = propertyMapper.dtoToProperty(propertyRequest);
-        newProperty.setUser(user.get());
+
+        newProperty.setUser(user);
         newProperty.setCity(city.get());
        propertyRepository.save(newProperty);
         return propertyMapper.propertyToDto(newProperty);
