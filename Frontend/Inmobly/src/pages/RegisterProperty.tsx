@@ -124,7 +124,7 @@ export const RegisterProperty = () => {
         address: formData.address,
         price: parseFloat(formData.price),
         area: parseFloat(formData.area),
-        image: imageUrls[0],
+        images: imageUrls,
         numberOfBathrooms: parseInt(formData.bathrooms),
         numberOfBedRooms: parseInt(formData.rooms),
         cityId: formData.city?.id,
