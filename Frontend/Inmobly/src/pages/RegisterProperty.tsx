@@ -14,7 +14,8 @@ type City = {
 type FormData = {
   description: string;
   price: string;
-  type: "venta" | "arriendo" | "";
+  operationType: "SELL" | "LEASE" | "";
+  propertyType: string;
   department: Department | null;
   city: City | null;
   address: string;
@@ -28,7 +29,8 @@ export const RegisterProperty = () => {
   const [formData, setFormData] = useState<FormData>({
     description: "",
     price: "",
-    type: "",
+    operationType: "",
+    propertyType: "",
     department: null,
     city: null,
     address: "",
@@ -110,7 +112,7 @@ export const RegisterProperty = () => {
       const ownerId = localStorage.getItem("ownerId");
 
       if (!token || !ownerId) {
-        alert("Falta autenticación o ownerId");
+        alert("Authentication or ownerId missing");
         return;
       }
 
@@ -118,16 +120,17 @@ export const RegisterProperty = () => {
 
       const payload = {
         registryNumber: Date.now(),
-        operationType: formData.type === "venta" ? "SELL" : "LEASE",
+        operationType: formData.operationType,
         address: formData.address,
         price: parseFloat(formData.price),
         area: parseFloat(formData.area),
-        image: imageUrls[0], // solo se usa la primera imagen
+        image: imageUrls[0],
         numberOfBathrooms: parseInt(formData.bathrooms),
         numberOfBedRooms: parseInt(formData.rooms),
         cityId: formData.city?.id,
         ownerId: Number(ownerId),
-        propertyType: "HOUSE",
+        propertyType: formData.propertyType,
+        description: formData.description,
       };
 
       const res = await fetch("http://localhost:8080/api/v1/properties", {
@@ -158,20 +161,43 @@ export const RegisterProperty = () => {
       <form onSubmit={handleSubmit}>
         <textarea
           name="description"
-          placeholder="Descripción"
+          placeholder="Description"
           value={formData.description}
           onChange={handleChange}
         />
         <input
           name="price"
-          placeholder="Precio"
+          placeholder="Price"
           value={formData.price}
           onChange={handleChange}
         />
-        <select name="type" value={formData.type} onChange={handleChange}>
-          <option value="">Tipo de operación</option>
-          <option value="venta">Venta</option>
-          <option value="arriendo">Arriendo</option>
+        <select
+          name="operationType"
+          value={formData.operationType}
+          onChange={handleChange}
+        >
+          <option value="">Operation type</option>
+          <option value="SELL">Sell</option>
+          <option value="LEASE">Lease</option>
+        </select>
+
+        <select
+          name="propertyType"
+          value={formData.propertyType}
+          onChange={handleChange}
+        >
+          <option value="">Property type</option>
+          <option value="BUILDING">Building</option>
+          <option value="HOUSE">House</option>
+          <option value="OFFICE">Office</option>
+          <option value="STUDIO_APARTMENT">Studio Apartment</option>
+          <option value="WAREHOUSE">Warehouse</option>
+          <option value="MEDICAL_OFFICE">Medical Office</option>
+          <option value="COMMERCIAL_SPACE">Commercial Space</option>
+          <option value="LOT">Lot</option>
+          <option value="FARM">Farm</option>
+          <option value="OFFICE_BUILDING">Office Building</option>
+          <option value="APARTMENT_BUILDING">Apartment Building</option>
         </select>
 
         <select
@@ -188,7 +214,7 @@ export const RegisterProperty = () => {
           }}
           value={formData.department?.id || ""}
         >
-          <option value="">Departamento</option>
+          <option value="">Department</option>
           {departments.map((dep) => (
             <option key={dep.id} value={dep.id}>
               {dep.name}
@@ -204,7 +230,7 @@ export const RegisterProperty = () => {
             setFormData((prev) => ({ ...prev, city: city || null }));
           }}
         >
-          <option value="">Ciudad</option>
+          <option value="">City</option>
           {cities.map((city) => (
             <option key={city.id} value={city.id}>
               {city.name}
@@ -214,25 +240,25 @@ export const RegisterProperty = () => {
 
         <input
           name="address"
-          placeholder="Dirección"
+          placeholder="Address"
           value={formData.address}
           onChange={handleChange}
         />
         <input
           name="area"
-          placeholder="Área (m²)"
+          placeholder="Area (m²)"
           value={formData.area}
           onChange={handleChange}
         />
         <input
           name="rooms"
-          placeholder="Habitaciones"
+          placeholder="Bedrooms"
           value={formData.rooms}
           onChange={handleChange}
         />
         <input
           name="bathrooms"
-          placeholder="Baños"
+          placeholder="Bathrooms"
           value={formData.bathrooms}
           onChange={handleChange}
         />
@@ -256,7 +282,7 @@ export const RegisterProperty = () => {
           </div>
         )}
 
-        <button type="submit">Registrar propiedad</button>
+        <button type="submit">Register property</button>
       </form>
     </main>
   );

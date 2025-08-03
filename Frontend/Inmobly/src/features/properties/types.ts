@@ -1,7 +1,7 @@
 export type Property = {
   id: number;
-  department: string;
-  city: string;
+  department: { id: number; name: string };
+  city: { id: number; name: string };
   address: string;
   neighborhood: string;
   type: string;

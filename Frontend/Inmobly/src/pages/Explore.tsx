@@ -22,8 +22,8 @@ export const Explore = () => {
 
   const filteredProperties = mockProperties.filter((p) => {
     return (
-      (!filters.department || p.department === filters.department) &&
-      (!filters.city || p.city === filters.city) &&
+      (!filters.department || String(p.department.id) === filters.department) &&
+      (!filters.city || String(p.city.id) === filters.city) &&
       (!filters.type || p.type === filters.type) &&
       (!filters.operation || p.operation === filters.operation) &&
       (!filters.bedrooms || p.bedrooms >= parseInt(filters.bedrooms)) &&
@@ -43,7 +43,9 @@ export const Explore = () => {
       <section>
         <PropertyFilter filters={filters} onChange={setFilters} />
         <div>
-          <button onClick={() => setFilters(initialFilters)}>Limpiar filtros</button>
+          <button onClick={() => setFilters(initialFilters)}>
+            Limpiar filtros
+          </button>
         </div>
       </section>
 
