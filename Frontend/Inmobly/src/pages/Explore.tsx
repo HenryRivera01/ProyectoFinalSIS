@@ -1,8 +1,9 @@
 import { Navbar } from "../components/Navbar";
 import { PropertyFilter } from "../components/PropertyFilter";
-import { mockProperties } from "../data/mockProperties";
+// import { mockProperties } from "../data/mockProperties";
 import { PropertyCard } from "../components/PropertyCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import type { ApiProperty } from "../features/properties/types";
 
 const initialFilters = {
   department: "",
@@ -19,15 +20,31 @@ const initialFilters = {
 
 export const Explore = () => {
   const [filters, setFilters] = useState(initialFilters);
+  const [properties, setProperties] = useState<ApiProperty[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredProperties = mockProperties.filter((p) => {
+  useEffect(() => {
+    fetch("http://localhost:8080/api/v1/properties")
+      .then((res) => res.json())
+      .then((data) => setProperties(data))
+      .catch((err) => {
+        console.error("Error cargando propiedades", err);
+        setProperties([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filteredProperties = properties.filter((p) => {
     return (
-      (!filters.department || String(p.department.id) === filters.department) &&
-      (!filters.city || String(p.city.id) === filters.city) &&
-      (!filters.type || p.type === filters.type) &&
-      (!filters.operation || p.operation === filters.operation) &&
-      (!filters.bedrooms || p.bedrooms >= parseInt(filters.bedrooms)) &&
-      (!filters.bathrooms || p.bathrooms >= parseInt(filters.bathrooms)) &&
+      (!filters.department ||
+        String(p.city?.id).startsWith(filters.department)) && // Ajusta si tienes info de departamento
+      (!filters.city || String(p.city?.id) === filters.city) &&
+      (!filters.type || p.propertyType === filters.type) &&
+      (!filters.operation || p.operationType === filters.operation) &&
+      (!filters.bedrooms ||
+        p.getNumberOfBedRooms >= parseInt(filters.bedrooms)) &&
+      (!filters.bathrooms ||
+        p.numberOfBathrooms >= parseInt(filters.bathrooms)) &&
       (!filters.priceMin || p.price >= parseInt(filters.priceMin)) &&
       (!filters.priceMax || p.price <= parseInt(filters.priceMax)) &&
       (!filters.areaMin || p.area >= parseInt(filters.areaMin)) &&
@@ -50,14 +67,36 @@ export const Explore = () => {
       </section>
 
       <section>
-        {filteredProperties.length > 0 ? (
-          filteredProperties.map((p) => (
-            <PropertyCard
-              key={p.id}
-              property={p}
-              onClick={() => console.log("Property clicked:", p.id)}
-            />
-          ))
+        {loading ? (
+          <p>Cargando propiedades...</p>
+        ) : filteredProperties.length > 0 ? (
+          filteredProperties.map((p) => {
+            // Transformar ApiProperty a Property
+            const property = {
+              id: p.registryNumber,
+              department: { id: 0, name: "" },
+              city: p.city,
+              address: p.address,
+              neighborhood: "", 
+              type: p.propertyType,
+              bedrooms: p.getNumberOfBedRooms,
+              bathrooms: p.numberOfBathrooms,
+              operation: p.operationType,
+              price: p.price,
+              area: p.area,
+              description: "",
+              pictures: p.images ?? [],
+            };
+            return (
+              <PropertyCard
+                key={p.registryNumber}
+                property={property}
+                onClick={() =>
+                  console.log("Property clicked:", p.registryNumber)
+                }
+              />
+            );
+          })
         ) : (
           <p>No se encontraron propiedades que coincidan con los filtros.</p>
         )}
