@@ -72,23 +72,22 @@ export default function Register() {
   return (
     <main>
         <Navbar />
-      <h1>Registro de Usuario</h1>
+      <h1>User Registration</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Tipo de documento:
+          Document type:
           <select
             name="documentType"
             value={formData.documentType}
             onChange={handleChange}
           >
-            <option value="CC">Cédula de ciudadanía</option>
-            <option value="TI">Tarjeta de identidad</option>
-            <option value="CE">Cédula de extranjería</option>
+            <option value="CC">CC</option>
+            <option value="CE">CE</option>
           </select>
         </label>
 
         <label>
-          Número de documento:
+          Document number:
           <input
             type="text"
             inputMode="numeric"
@@ -101,7 +100,7 @@ export default function Register() {
         </label>
 
         <label>
-          Nombres:
+          First name:
           <input
             type="text"
             name="firstName"
@@ -112,7 +111,7 @@ export default function Register() {
         </label>
 
         <label>
-          Apellidos:
+          Last name:
           <input
             type="text"
             name="lastName"
@@ -123,7 +122,7 @@ export default function Register() {
         </label>
 
         <label>
-          Correo electrónico:
+          Email:
           <input
             type="email"
             name="email"
@@ -134,7 +133,7 @@ export default function Register() {
         </label>
 
         <label>
-          Contraseña:
+          Password:
           <input
             type="password"
             name="password"
@@ -145,7 +144,7 @@ export default function Register() {
         </label>
 
         <label>
-          Número de teléfono:
+          Phone number:
           <input
             type="text"
             inputMode="numeric"
@@ -158,12 +157,13 @@ export default function Register() {
         </label>
 
         <button type="submit" disabled={loading}>
-          {loading ? "Registrando..." : "Registrarse"}
+          {loading ? "Registering..." : "Register"}
         </button>
 
         {error && <p role="alert">Error: {error}</p>}
-        {success && <p>Registro exitoso ✅</p>}
+        {success && <p>Registration successful ✅</p>}
       </form>
     </main>
   );
 }
+

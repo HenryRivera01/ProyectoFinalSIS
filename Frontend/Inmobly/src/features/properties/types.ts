@@ -1,7 +1,7 @@
 export type Property = {
   id: number;
-  department: string;
-  city: string;
+  department: { id: number; name: string };
+  city: { id: number; name: string };
   address: string;
   neighborhood: string;
   type: string;
@@ -12,4 +12,19 @@ export type Property = {
   area: number;
   description: string;
   pictures: string[];
+};
+
+export type ApiProperty = {
+  registryNumber: number;
+  operationType: string;
+  address: string;
+  price: number;
+  area: number;
+  images: string[] | null;
+  numberOfBathrooms: number;
+  getNumberOfBedRooms: number;
+  city: { id: number; name: string };
+  ownerEmail: string;
+  ownerPhoneNumber: number;
+  propertyType: string;
 };

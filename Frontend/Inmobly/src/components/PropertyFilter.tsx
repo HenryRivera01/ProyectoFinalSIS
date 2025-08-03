@@ -18,13 +18,44 @@ type Props = {
   onChange: (filters: FilterValues) => void;
 };
 
+type Department = {
+  id: number;
+  name: string;
+};
+
+type City = {
+  id: number;
+  name: string;
+};
+
 export const PropertyFilter = ({ filters, onChange }: Props) => {
   const [localFilters, setLocalFilters] = useState(filters);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
 
-    
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/v1/location/departments")
+      .then((res) => res.json())
+      .then((data) => setDepartments(data))
+      .catch((err) => console.error("Error loading departments", err));
+  }, []);
+
+  useEffect(() => {
+    if (localFilters.department) {
+      fetch(
+        `http://localhost:8080/api/v1/location/departments/${localFilters.department}/cities`
+      )
+        .then((res) => res.json())
+        .then((data) => setCities(data))
+        .catch((err) => console.error("Error loading cities", err));
+    } else {
+      setCities([]);
+    }
+  }, [localFilters.department]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -33,6 +64,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     setLocalFilters((prev) => ({
       ...prev,
       [name]: value,
+      ...(name === "department" ? { city: "" } : {}), // reset city if department changes
     }));
   };
 
@@ -44,40 +76,74 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-
-        <select name="department" value={localFilters.department} onChange={handleChange}>
+        <select
+          name="department"
+          value={localFilters.department}
+          onChange={handleChange}
+        >
           <option value="">All departments</option>
-          <option value="Cundinamarca">Cundinamarca</option>
-          <option value="Antioquia">Antioquia</option>
+          {departments.map((dep) => (
+            <option key={dep.id} value={dep.id}>
+              {dep.name}
+            </option>
+          ))}
         </select>
 
-        <select name="city" value={localFilters.city} onChange={handleChange}>
+        <select
+          name="city"
+          value={localFilters.city}
+          onChange={handleChange}
+          disabled={!localFilters.department}
+        >
           <option value="">All cities</option>
-          <option value="Bogotá">Bogotá</option>
-          <option value="Medellín">Medellín</option>
-          <option value="Cali">Cali</option>
+          {cities.map((city) => (
+            <option key={city.id} value={city.id}>
+              {city.name}
+            </option>
+          ))}
         </select>
 
         <select name="type" value={localFilters.type} onChange={handleChange}>
           <option value="">All types</option>
-          <option value="House">House</option>
-          <option value="Apartment">Apartment</option>
+          <option value="BUILDING">Building</option>
+          <option value="HOUSE">House</option>
+          <option value="OFFICE">Office</option>
+          <option value="STUDIO_APARTMENT">Studio Apartment</option>
+          <option value="WAREHOUSE">Warehouse</option>
+          <option value="MEDICAL_OFFICE">Medical Office</option>
+          <option value="COMMERCIAL_SPACE">Commercial Space</option>
+          <option value="LOT">Lot</option>
+          <option value="FARM">Farm</option>
+          <option value="OFFICE_BUILDING">Office Building</option>
+          <option value="APARTMENT_BUILDING">Apartment Building</option>
         </select>
 
-        <select name="operation" value={localFilters.operation} onChange={handleChange}>
+        <select
+          name="operation"
+          value={localFilters.operation}
+          onChange={handleChange}
+        >
           <option value="">All operations</option>
           <option value="Sale">Buy</option>
           <option value="Rent">Rent</option>
         </select>
 
-        <select name="bedrooms" value={localFilters.bedrooms} onChange={handleChange}>
+        <select
+          name="bedrooms"
+          value={localFilters.bedrooms}
+          onChange={handleChange}
+        >
           <option value="">Bedrooms</option>
           <option value="1">1+</option>
           <option value="2">2+</option>
           <option value="3">3+</option>
         </select>
 
-        <select name="bathrooms" value={localFilters.bathrooms} onChange={handleChange}>
+        <select
+          name="bathrooms"
+          value={localFilters.bathrooms}
+          onChange={handleChange}
+        >
           <option value="">Bathrooms</option>
           <option value="1">1+</option>
           <option value="2">2+</option>

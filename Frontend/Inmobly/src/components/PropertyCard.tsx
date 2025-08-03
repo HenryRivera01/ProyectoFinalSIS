@@ -1,12 +1,9 @@
-
-import type { Property } from '../features/properties/types';
+import type { Property } from "../features/properties/types";
 
 type Props = {
   property: Property;
   onClick?: () => void;
 };
-
-
 
 export const PropertyCard = ({ property, onClick }: Props) => {
   return (
@@ -21,8 +18,12 @@ export const PropertyCard = ({ property, onClick }: Props) => {
 
       <section>
         <header>
-          <p>{property.city}, {property.neighborhood}</p>
-          <h3>{property.type} en {property.operation}</h3>
+          <p>
+            {property.city.name}, {property.neighborhood}
+          </p>
+          <h3>
+            {property.type} en {property.operation}
+          </h3>
         </header>
 
         <address>{property.address}</address>

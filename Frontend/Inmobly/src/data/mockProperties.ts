@@ -1,10 +1,10 @@
-import type { Property } from '../features/properties/types';
+import type { Property } from "../features/properties/types";
 
 export const mockProperties: Property[] = [
   {
     id: 1,
-    department: "Cundinamarca",
-    city: "Bogotá",
+    department: { id: 1, name: "Cundinamarca" },
+    city: { id: 495, name: "Bogotá" },
     address: "Cra 13 #45-67",
     neighborhood: "Chapinero",
     type: "Apartment",
@@ -13,13 +13,14 @@ export const mockProperties: Property[] = [
     operation: "Rent",
     price: 1800000,
     area: 60,
-    description: "Cómodo apartamento cerca a universidades y zonas comerciales.",
+    description:
+      "Cómodo apartamento cerca a universidades y zonas comerciales.",
     pictures: ["/images/apt1.jpg"],
   },
   {
     id: 2,
-    department: "Antioquia",
-    city: "Medellín",
+    department: { id: 2, name: "Antioquia" },
+    city: { id: 101, name: "Medellín" },
     address: "Calle 10 #30-20",
     neighborhood: "El Poblado",
     type: "House",
@@ -33,8 +34,8 @@ export const mockProperties: Property[] = [
   },
   {
     id: 3,
-    department: "Antioquia",
-    city: "Medellín",
+    department: { id: 2, name: "Antioquia" },
+    city: { id: 101, name: "Medellín" },
     address: "Carrera 78 #42-19",
     neighborhood: "Laureles",
     type: "Apartment",
@@ -48,8 +49,8 @@ export const mockProperties: Property[] = [
   },
   {
     id: 4,
-    department: "Valle del Cauca",
-    city: "Jamundí",
+    department: { id: 3, name: "Valle del Cauca" },
+    city: { id: 201, name: "Jamundí" },
     address: "Km 3 vía Jamundí-Cali",
     neighborhood: "Campestre",
     type: "House",
@@ -63,8 +64,8 @@ export const mockProperties: Property[] = [
   },
   {
     id: 5,
-    department: "Valle del Cauca",
-    city: "Cali",
+    department: { id: 3, name: "Valle del Cauca" },
+    city: { id: 202, name: "Cali" },
     address: "Av 6N #34-56",
     neighborhood: "Santa Mónica",
     type: "Apartment",
@@ -78,8 +79,8 @@ export const mockProperties: Property[] = [
   },
   {
     id: 6,
-    department: "Cundinamarca",
-    city: "Bogotá",
+    department: { id: 1, name: "Cundinamarca" },
+    city: { id: 495, name: "Bogotá" },
     address: "Calle 160 #72-88",
     neighborhood: "Suba",
     type: "House",
