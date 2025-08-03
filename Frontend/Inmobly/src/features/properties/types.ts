@@ -20,7 +20,7 @@ export type ApiProperty = {
   address: string;
   price: number;
   area: number;
-  images: string[] | null;
+  images: string[] | null;  
   numberOfBathrooms: number;
   getNumberOfBedRooms: number;
   city: { id: number; name: string };

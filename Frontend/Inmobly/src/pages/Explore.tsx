@@ -1,6 +1,5 @@
 import { Navbar } from "../components/Navbar";
 import { PropertyFilter } from "../components/PropertyFilter";
-// import { mockProperties } from "../data/mockProperties";
 import { PropertyCard } from "../components/PropertyCard";
 import { useState, useEffect } from "react";
 import type { ApiProperty } from "../features/properties/types";
@@ -36,8 +35,8 @@ export const Explore = () => {
 
   const filteredProperties = properties.filter((p) => {
     return (
-      (!filters.department ||
-        String(p.city?.id).startsWith(filters.department)) && // Ajusta si tienes info de departamento
+      // (!filters.department ||
+      //   String(p.city?.id).startsWith(filters.department)) && // Elimina o corrige esto si tienes la relación
       (!filters.city || String(p.city?.id) === filters.city) &&
       (!filters.type || p.propertyType === filters.type) &&
       (!filters.operation || p.operationType === filters.operation) &&
@@ -55,29 +54,28 @@ export const Explore = () => {
   return (
     <main>
       <Navbar />
-      <h1>Explorar propiedades</h1>
+      <h1>Explore Properties</h1>
 
       <section>
         <PropertyFilter filters={filters} onChange={setFilters} />
         <div>
           <button onClick={() => setFilters(initialFilters)}>
-            Limpiar filtros
+            Clear filters
           </button>
         </div>
       </section>
 
       <section>
         {loading ? (
-          <p>Cargando propiedades...</p>
+          <p>Loading properties...</p>
         ) : filteredProperties.length > 0 ? (
           filteredProperties.map((p) => {
-            // Transformar ApiProperty a Property
             const property = {
               id: p.registryNumber,
               department: { id: 0, name: "" },
               city: p.city,
               address: p.address,
-              neighborhood: "", 
+              neighborhood: "",
               type: p.propertyType,
               bedrooms: p.getNumberOfBedRooms,
               bathrooms: p.numberOfBathrooms,
@@ -98,7 +96,7 @@ export const Explore = () => {
             );
           })
         ) : (
-          <p>No se encontraron propiedades que coincidan con los filtros.</p>
+          <p>No properties found matching the filters.</p>
         )}
       </section>
     </main>

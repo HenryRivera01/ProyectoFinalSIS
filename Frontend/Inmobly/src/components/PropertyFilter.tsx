@@ -124,8 +124,8 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           onChange={handleChange}
         >
           <option value="">All operations</option>
-          <option value="Sale">Buy</option>
-          <option value="Rent">Rent</option>
+          <option value="SELL">Buy</option>
+          <option value="LEASE">Rent</option>
         </select>
 
         <select

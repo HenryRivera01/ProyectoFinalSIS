@@ -19,18 +19,18 @@ export const PropertyCard = ({ property, onClick }: Props) => {
       <section>
         <header>
           <p>
-            {property.city.name}, {property.neighborhood}
+            {property.city.name}
           </p>
           <h3>
-            {property.type} en {property.operation}
+            {property.type} on {property.operation}
           </h3>
         </header>
 
         <address>{property.address}</address>
 
         <ul>
-          <li>{property.bedrooms} hab</li>
-          <li>{property.bathrooms} baños</li>
+          <li>{property.bedrooms} Bedrooms</li>
+          <li>{property.bathrooms} Bathrooms</li>
           <li>{property.area} m²</li>
         </ul>
 
