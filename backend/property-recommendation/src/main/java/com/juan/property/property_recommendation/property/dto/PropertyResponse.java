@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
@@ -18,11 +19,11 @@ public class PropertyResponse {
     private Long registryNumber;
     private OperationType operationType;
     private String address;
-    private Double price;
+    private BigDecimal price;
     private Double area;
     private List<String> images;
     private Integer numberOfBathrooms;
-    private Integer getNumberOfBedRooms;
+    private Integer numberOfBedrooms;
     private City city;
     private String ownerEmail;
     private Long ownerPhoneNumber;

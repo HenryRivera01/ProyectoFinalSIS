@@ -6,6 +6,7 @@ import com.juan.property.property_recommendation.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -19,14 +20,18 @@ public class Property {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Long registryNumber;
+    @Enumerated(EnumType.STRING)
     private OperationType operationType;
     private String address;
-    private Double price;
+    private BigDecimal price;
     private Double area;
     private List<String> images;
     private Integer numberOfBathrooms;
-    private Integer getNumberOfBedRooms;
+    private Integer numberOfBedrooms;
+    @Enumerated(EnumType.STRING)
     public PropertyType propertyType;
+//parquadero
+    //created at
 
     @ManyToOne()
     @JoinColumn(name="city_id")

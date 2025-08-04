@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -20,11 +21,11 @@ public class PropertyRequest {
     private Long registryNumber;
     private OperationType operationType;
     private String address;
-    private Double price;
+    private BigDecimal price;
     private Double area;
     private List<String> images;
     private Integer numberOfBathrooms;
-    private Integer numberOfBedRooms;
+    private Integer numberOfBedrooms;
     private PropertyType propertyType;
     private Integer cityId;
 }
