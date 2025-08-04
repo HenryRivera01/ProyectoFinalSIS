@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Navbar } from '../components/Navbar';
+import { useState } from "react";
+import { Navbar } from "../components/Navbar";
 
 interface LoginData {
   email: string;
@@ -8,47 +8,50 @@ interface LoginData {
 
 const Login = () => {
   const [formData, setFormData] = useState<LoginData>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage('');
+    setMessage("");
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/login', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const result = await response.json();
-        setMessage('Inicio de sesión exitoso.');
-        console.log(result); // Puedes guardar un token aquí si lo recibes
+        setMessage("Inicio de sesión exitoso.");
+        // Guarda el token y el ownerId en localStorage
+        localStorage.setItem("authToken", result.token);
+        localStorage.setItem("ownerId", result.ownerId); // Ajusta el nombre según tu backend
+        console.log(result);
       } else {
         const error = await response.text();
         setMessage(`Error: ${error}`);
       }
     } catch (err) {
       console.error(err);
-      setMessage('Error al conectar con el servidor.');
+      setMessage("Error al conectar con el servidor.");
     }
   };
 
   return (
     <main>
-    < Navbar />
+      <Navbar />
       <h1>Iniciar Sesión</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Correo electrónico:</label>
@@ -60,7 +63,7 @@ const Login = () => {
           required
           onChange={handleChange}
         />
-        
+
         <label htmlFor="password">Contraseña:</label>
         <input
           type="password"
