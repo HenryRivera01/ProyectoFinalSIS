@@ -40,13 +40,16 @@ export default function Register() {
     setSuccess(false);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/v1/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al registrar el usuario");
@@ -71,9 +74,9 @@ export default function Register() {
 
   return (
     <main>
-        <Navbar />
+      <Navbar />
       <h1>User Registration</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} aria-label="register-form">
         <label>
           Document type:
           <select
@@ -166,4 +169,3 @@ export default function Register() {
     </main>
   );
 }
-
