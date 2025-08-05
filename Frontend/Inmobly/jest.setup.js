@@ -1,4 +1,6 @@
-// Polyfill para TextEncoder/TextDecoder en Node.js
+
+require("whatwg-fetch"); // Polyfill para fetch
+
 const { TextEncoder, TextDecoder } = require("util");
 
 if (typeof global.TextEncoder === "undefined") {

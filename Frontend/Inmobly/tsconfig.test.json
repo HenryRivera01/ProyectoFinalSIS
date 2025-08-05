@@ -1,11 +1,16 @@
 {
-  "extends": "./tsconfig.app.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["jest", "node", "yargs"],
     "jsx": "react-jsx",
+    "types": ["jest", "node"],
+    "module": "commonjs",
+    "target": "es6",
     "esModuleInterop": true,
-    "module": "ESNext",
-    "verbatimModuleSyntax": false
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "isolatedModules": false,
+    "skipLibCheck": true,
+    "noEmit": true
   },
-  "include": ["src", "**/*.test.ts", "**/*.test.tsx"]
+  "include": ["src", "jest.setup.js"]
 }

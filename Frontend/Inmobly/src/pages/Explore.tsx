@@ -59,7 +59,7 @@ export const Explore = () => {
       <section>
         <PropertyFilter filters={filters} onChange={setFilters} />
         <div>
-          <button onClick={() => setFilters(initialFilters)}>
+          <button onClick={() => setFilters({ ...initialFilters })}>
             Clear filters
           </button>
         </div>
