@@ -74,9 +74,13 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} aria-label="Property Filter Form">
+      <fieldset>
+        <legend>Location Filters</legend>
+
+        <label htmlFor="department">Department</label>
         <select
+          id="department"
           name="department"
           value={localFilters.department}
           onChange={handleChange}
@@ -89,7 +93,9 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           ))}
         </select>
 
+        <label htmlFor="city">City</label>
         <select
+          id="city"
           name="city"
           value={localFilters.city}
           onChange={handleChange}
@@ -102,8 +108,18 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
             </option>
           ))}
         </select>
+      </fieldset>
 
-        <select name="type" value={localFilters.type} onChange={handleChange}>
+      <fieldset>
+        <legend>Property Characteristics</legend>
+
+        <label htmlFor="type">Type</label>
+        <select
+          id="type"
+          name="type"
+          value={localFilters.type}
+          onChange={handleChange}
+        >
           <option value="">All types</option>
           <option value="BUILDING">Building</option>
           <option value="HOUSE">House</option>
@@ -118,7 +134,9 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           <option value="APARTMENT_BUILDING">Apartment Building</option>
         </select>
 
+        <label htmlFor="operation">Operation</label>
         <select
+          id="operation"
           name="operation"
           value={localFilters.operation}
           onChange={handleChange}
@@ -128,7 +146,9 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           <option value="LEASE">Rent</option>
         </select>
 
+        <label htmlFor="bedrooms">Bedrooms</label>
         <select
+          id="bedrooms"
           name="bedrooms"
           value={localFilters.bedrooms}
           onChange={handleChange}
@@ -139,7 +159,9 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           <option value="3">3+</option>
         </select>
 
+        <label htmlFor="bathrooms">Bathrooms</label>
         <select
+          id="bathrooms"
           name="bathrooms"
           value={localFilters.bathrooms}
           onChange={handleChange}
@@ -149,39 +171,53 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           <option value="2">2+</option>
           <option value="3">3+</option>
         </select>
+      </fieldset>
 
+      <fieldset>
+        <legend>Price and Area</legend>
+
+        <label htmlFor="priceMin">Min Price</label>
         <input
           type="number"
+          id="priceMin"
           name="priceMin"
           placeholder="Min Price"
           value={localFilters.priceMin}
           onChange={handleChange}
         />
+
+        <label htmlFor="priceMax">Max Price</label>
         <input
           type="number"
+          id="priceMax"
           name="priceMax"
           placeholder="Max Price"
           value={localFilters.priceMax}
           onChange={handleChange}
         />
 
+        <label htmlFor="areaMin">Min Area (m²)</label>
         <input
           type="number"
+          id="areaMin"
           name="areaMin"
           placeholder="Min m²"
           value={localFilters.areaMin}
           onChange={handleChange}
         />
+
+        <label htmlFor="areaMax">Max Area (m²)</label>
         <input
           type="number"
+          id="areaMax"
           name="areaMax"
           placeholder="Max m²"
           value={localFilters.areaMax}
           onChange={handleChange}
         />
+      </fieldset>
 
-        <button type="submit">Apply Filters</button>
-      </form>
-    </div>
+      <button type="submit">Apply Filters</button>
+    </form>
   );
 };
