@@ -6,6 +6,7 @@ import com.juan.property.property_recommendation.property.dto.PropertyRequest;
 import com.juan.property.property_recommendation.property.dto.PropertyResponse;
 import com.juan.property.property_recommendation.property.service.PropertyService;
 import com.juan.property.property_recommendation.user.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class PropertyController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)//200
     public List<PropertyResponse> findAll(
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
@@ -53,16 +55,13 @@ public class PropertyController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)//201
     public PropertyResponse register(
             @RequestHeader("X-Auth-Token") String token,
-            @RequestBody PropertyRequest propertyRequest
+            @RequestBody @Valid PropertyRequest propertyRequest
     ){
         User user = requiredAuth(token);
         return propertyService.register(propertyRequest, user);
     }
 
-//    @GetMapping("/filter")
-//    public List<PropertyResponse> filterProperties(@ModelAttribute  PropertyFilterRequest filter) {
-//        return propertyService.filter(filter);
-//    }
 }

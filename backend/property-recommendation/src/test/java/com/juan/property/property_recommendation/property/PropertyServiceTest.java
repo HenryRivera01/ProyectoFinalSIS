@@ -23,8 +23,8 @@ import static com.juan.property.property_recommendation.property.OperationType.S
 import static com.juan.property.property_recommendation.property.PropertyType.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PropertyServiceTest {
@@ -111,43 +111,77 @@ public class PropertyServiceTest {
     }
 
     // HAPPY PATH
+    @Test
+    public void findAllPropertiesSuccess(){
+        //Given
+        PropertySpecification spec = new PropertySpecification();
 
-    //@Test
-//    public void findAllPropertiesSuccess(){
-//        when(propertyRepository.findAll()).thenReturn(List.of(property));
-//        when(propertyMapper.propertyToDto(property)).thenReturn(propertyResponse);
-//
-//        List<PropertyResponse> properties = propertyService.findAll();
-//
-//        assertThat(properties).isNotNull();
-//        assertThat(properties.size()).isEqualTo(1);
-//    }
+        when(propertyRepository.findAll(spec)).thenReturn(List.of(property));
+        when(propertyMapper.propertyToDto(property)).thenReturn(propertyResponse);
+
+
+        //when
+        List<PropertyResponse> properties = propertyService.findAll(spec);
+
+
+        //then
+        assertThat(properties).isNotNull();
+        assertThat(properties.size()).isEqualTo(1);
+    }
 
     @Test
     public void registerPropertySuccess(){
-
+         //Given
         when(cityRepository.findById(propertyRequest.getCityId())).thenReturn(Optional.of(city));
         when(propertyMapper.dtoToProperty(propertyRequest)).thenReturn(property);
         when(propertyRepository.save(property)).thenReturn(property);
         when(propertyMapper.propertyToDto(property)).thenReturn(propertyResponse);
 
+        //when
+
         PropertyResponse propertyResponse = propertyService.register(propertyRequest, user);
 
+        //then
         assertThat(propertyResponse).isNotNull();
+        assertEquals(100100200L, propertyResponse.getRegistryNumber()); assertThat(propertyResponse).isNotNull();
         assertEquals(100100200L, propertyResponse.getRegistryNumber());
     }
 
-    @Test
-    public void filterPropertiesSuccess(){
-
-    }
 
     //EDGE CASES
     @Test
-    public void registerProperty_nonNumericRegistryNumber_ExceptionThrown(){
+    public void registerPropertyWithUnexistedCity(){
 
+        // Given
+        when(cityRepository.findById(propertyRequest.getCityId())).thenReturn(Optional.empty());
+        // When
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+        // Then
+        assertEquals("The city  does not exist", exception.getMessage());
+        verify(cityRepository, times(1)).findById(propertyRequest.getCityId());
+        verify(propertyRepository, never()).save(any());
 
     }
+
+    @Test
+    public void registerPropertyThatAlreadyExists(){
+
+        // Given
+        when(propertyRepository.findByRegistryNumber(propertyRequest.getRegistryNumber())).thenReturn(Optional.of(property));
+        // When
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+        // Then
+        assertEquals("The property already exists", exception.getMessage());
+        verify(propertyRepository, times(1)).findByRegistryNumber(propertyRequest.getRegistryNumber());
+        verify(propertyRepository, never()).save(any());
+
+    }
+
+
 
 
 

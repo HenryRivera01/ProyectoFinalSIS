@@ -35,32 +35,23 @@ public class PropertyService implements  IPropertyService{
 
     @Override
     public PropertyResponse register(PropertyRequest propertyRequest, User user) {
+        Optional<Property> existingproperty = propertyRepository.findByRegistryNumber(propertyRequest.getRegistryNumber());
+        if(existingproperty.isPresent()) {
+            throw new RuntimeException("The property already exists");
+        }
+
         Optional<City> city = cityRepository.findById(propertyRequest.getCityId());
         if(city.isEmpty()) {
             throw new RuntimeException("The city  does not exist");
         }
+
        var newProperty = propertyMapper.dtoToProperty(propertyRequest);
 
         newProperty.setUser(user);
         newProperty.setCity(city.get());
-       //propertyRepository.save(newProperty);
         return propertyMapper.propertyToDto(propertyRepository.save(newProperty));
     }
 
-//    public List<PropertyResponse> filter(PropertyFilterRequest filter) {
-//        return propertyRepository.findAll().stream()
-//                .filter(p -> filter.getMinPrice() == null || p.getPrice() >= filter.getMinPrice())
-//                .filter(p -> filter.getMaxPrice() == null || p.getPrice() <= filter.getMaxPrice())
-//                .filter(p -> filter.getMinArea() == null || p.getArea() >= filter.getMinArea())
-//                .filter(p -> filter.getMaxArea() == null || p.getArea() <= filter.getMaxArea())
-//                .filter(p -> filter.getNumberOfBathrooms() == null || p.getNumberOfBathrooms().equals(filter.getNumberOfBathrooms()))
-//                .filter(p -> filter.getNumberOfBedRooms() == null || p.getNumberOfBathrooms().equals(filter.getNumberOfBedRooms()))
-//                .filter(p -> filter.getCityId() == null || (p.getCity() != null && p.getCity().getId().equals(filter.getCityId())))
-//                .filter(p -> filter.getPropertyType() == null || p.getPropertyType().equals(filter.getPropertyType()))
-//                .filter(p -> filter.getOperationType() == null || p.getOperationType().equals(filter.getOperationType()))
-//                .map(propertyMapper::propertyToDto)
-//                .collect(Collectors.toList());
-//    }
 
 
 
