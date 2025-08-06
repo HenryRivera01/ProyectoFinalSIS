@@ -30,7 +30,8 @@ public class Property {
     private Integer numberOfBedrooms;
     @Enumerated(EnumType.STRING)
     public PropertyType propertyType;
-//parquadero
+
+//parquadero?????
     //created at
 
     @ManyToOne()

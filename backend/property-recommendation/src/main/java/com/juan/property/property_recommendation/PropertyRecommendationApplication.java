@@ -21,43 +21,4 @@ public class PropertyRecommendationApplication {
 
 	}
 
-	@Bean
-	public CommandLineRunner runner(
-			DepartmentRepository departmentRepository
-			//sCityRepository cityRepository
-	){
-		return args -> {
-//			if(roleRepository.findByName(RoleName.EMPLOYEE).isEmpty()) {
-//				roleRepository.save(Role.builder().name(RoleName.EMPLOYEE).build());
-//			}
-//			if(roleRepository.findByName(RoleName.ADMIN).isEmpty()) {
-//				roleRepository.save(Role.builder().name(RoleName.ADMIN).build());
-//			}
-//			var provider = Provider.builder()
-//					.name("Proveedor Ejemplo")
-//					.phone(3124567890L)
-//					.address("Calle 123 #45-67")
-//					.email("proveedor@ejemplo.com")
-//					.build();
-//			providerRepository.save(provider);
-
-//			var department = Department.builder()
-//					.name("Cundinamarca")
-//					.build();
-//
-//			var city = City.builder()
-//					.name("Bogotá")
-//					.build();
-//
-//
-//			city.setDepartment(department);
-//			department.setCities(List.of(city));
-//
-//			departmentRepository.save(department);
-
-
-		};
-
-	}
-
 }
