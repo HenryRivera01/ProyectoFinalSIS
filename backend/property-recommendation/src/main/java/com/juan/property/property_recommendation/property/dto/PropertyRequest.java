@@ -51,6 +51,6 @@ public class PropertyRequest {
     private PropertyType propertyType;
 
     @NotNull(message = "The city ID is required")
-    @Digits(fraction = 0, integer = 10, message = "The city ID must be a whole number with up to 10 digits")
+    @Positive(message = "The city id must be grater than zero")
     private Integer cityId;
 }
