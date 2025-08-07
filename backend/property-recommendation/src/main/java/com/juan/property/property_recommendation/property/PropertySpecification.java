@@ -4,6 +4,7 @@ import com.juan.property.property_recommendation.location.City;
 import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 public class PropertySpecification  implements Specification<Property> {
 
     private BigDecimal minPrice;

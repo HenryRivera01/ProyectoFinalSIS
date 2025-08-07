@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/properties")
+@RequestMapping(value = "/properties",consumes="application/json")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class PropertyController {
@@ -29,7 +29,7 @@ public class PropertyController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 
-    @GetMapping
+    @GetMapping(produces="application/json")
     @ResponseStatus(HttpStatus.OK)//200
     public List<PropertyResponse> findAll(
             @RequestParam(required = false) BigDecimal minPrice,
@@ -54,7 +54,7 @@ public class PropertyController {
         return propertyService.findAll(propertySpecification);
     }
 
-    @PostMapping
+    @PostMapping(produces="application/json")
     @ResponseStatus(HttpStatus.CREATED)//201
     public PropertyResponse register(
             @RequestHeader("X-Auth-Token") String token,

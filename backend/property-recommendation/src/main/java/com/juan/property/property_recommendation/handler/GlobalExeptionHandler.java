@@ -1,5 +1,6 @@
 package com.juan.property.property_recommendation.handler;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,6 +25,15 @@ public class GlobalExeptionHandler{
         });
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleRuntimeException(EntityNotFoundException ex) {
+        if (ex.getMessage().equalsIgnoreCase("Department not found")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity not found");
     }
 }
 

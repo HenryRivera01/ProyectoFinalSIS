@@ -10,10 +10,8 @@ import java.util.List;
 
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@ToString
-@EqualsAndHashCode
+@Setter
 public class PropertyRequest {
 
     @NotNull(message = "The registry number is required")
@@ -40,17 +38,25 @@ public class PropertyRequest {
     private List<String> images;
 
     @Positive(message = "The number of bathrooms must be grater than zero")
-    @Digits(fraction = 0, integer = 10, message = "The number of bathrooms must be a whole number with up to 10 digits")
     private Integer numberOfBathrooms;
 
     @Positive(message = "The number of bedrooms must be grater than zero")
-    @Digits(fraction = 0, integer = 10, message = "The number of bedrooms must be a whole number with up to 10 digits")
     private Integer numberOfBedrooms;
 
     @NotNull( message = "The property type must not be blank")
     private PropertyType propertyType;
 
     @NotNull(message = "The city ID is required")
-    @Digits(fraction = 0, integer = 10, message = "The city ID must be a whole number with up to 10 digits")
+    @Positive(message = "The city id must be grated than zero" )
     private Integer cityId;
+
+
+   public PropertyRequest(){
+       if(registryNumber != null){
+           if (String.valueOf(this.registryNumber).length() != 10) {
+               throw new IllegalArgumentException("The registry number must have exactly 10 digits");
+           }
+       }
+   }
+
 }
