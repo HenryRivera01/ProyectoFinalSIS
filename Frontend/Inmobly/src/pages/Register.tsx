@@ -1,15 +1,10 @@
 import { useState } from "react";
 import { Navbar } from "../components/Navbar";
-
-interface RegisterFormData {
-  documentType: string;
-  documentNumber: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
-}
+import {
+  validateRegisterForm,
+  type RegisterFormData,
+  type RegisterFormErrors,
+} from "../features/user/validateRegister";
 
 export default function Register() {
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -25,21 +20,50 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState<RegisterFormErrors>({});
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Limpia errores al editar
+    if (errors[name as keyof RegisterFormErrors]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: undefined,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validar formulario antes de enviar
+    const validationErrors = validateRegisterForm(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      return; // Detener si hay errores de validación
+    }
+
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
+      // Crear el objeto con los nombres de propiedades exactos que espera el backend
+      const payload = {
+        documentType: formData.documentType,
+        documentNumber: formData.documentNumber,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        phoneNumber: formData.phoneNumber,
+      };
+
       const response = await fetch(
         "http://localhost:8080/api/v1/auth/register",
         {
@@ -47,12 +71,39 @@ export default function Register() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
+      // Mostrar respuesta completa para depuración
+      console.log("Status:", response.status);
+      const responseText = await response.text();
+      console.log("Response:", responseText);
+
+      // Convertir la respuesta de texto a JSON si es posible
+      let responseData;
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        responseData = { text: responseText };
+      }
+
       if (!response.ok) {
-        throw new Error("Error al registrar el usuario");
+        // Si el backend responde 500, asumimos que es por documento duplicado
+        if (response.status === 500) {
+          setErrors((prev) => ({
+            ...prev,
+            documentNumber: "Document number already exists",
+          }));
+          setLoading(false);
+          return;
+        }
+
+        setError(
+          `Error: ${response.status} - ${responseData.message || responseText}`
+        );
+        setLoading(false);
+        return;
       }
 
       setSuccess(true);
@@ -66,6 +117,7 @@ export default function Register() {
         phoneNumber: "",
       });
     } catch (err) {
+      console.error("Error completo:", err);
       setError((err as Error).message);
     } finally {
       setLoading(false);
@@ -87,6 +139,9 @@ export default function Register() {
             <option value="CC">CC</option>
             <option value="CE">CE</option>
           </select>
+          {errors.documentType && (
+            <span style={{ color: "red" }}>{errors.documentType}</span>
+          )}
         </label>
 
         <label>
@@ -100,6 +155,9 @@ export default function Register() {
             onChange={handleChange}
             required
           />
+          {errors.documentNumber && (
+            <span style={{ color: "red" }}>{errors.documentNumber}</span>
+          )}
         </label>
 
         <label>
@@ -111,6 +169,9 @@ export default function Register() {
             onChange={handleChange}
             required
           />
+          {errors.firstName && (
+            <span style={{ color: "red" }}>{errors.firstName}</span>
+          )}
         </label>
 
         <label>
@@ -122,6 +183,9 @@ export default function Register() {
             onChange={handleChange}
             required
           />
+          {errors.lastName && (
+            <span style={{ color: "red" }}>{errors.lastName}</span>
+          )}
         </label>
 
         <label>
@@ -133,6 +197,7 @@ export default function Register() {
             onChange={handleChange}
             required
           />
+          {errors.email && <span style={{ color: "red" }}>{errors.email}</span>}
         </label>
 
         <label>
@@ -144,6 +209,9 @@ export default function Register() {
             onChange={handleChange}
             required
           />
+          {errors.password && (
+            <span style={{ color: "red" }}>{errors.password}</span>
+          )}
         </label>
 
         <label>
@@ -157,6 +225,9 @@ export default function Register() {
             onChange={handleChange}
             required
           />
+          {errors.phoneNumber && (
+            <span style={{ color: "red" }}>{errors.phoneNumber}</span>
+          )}
         </label>
 
         <button type="submit" disabled={loading}>

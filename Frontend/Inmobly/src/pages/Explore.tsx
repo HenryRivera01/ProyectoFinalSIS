@@ -20,9 +20,13 @@ const initialFilters = {
 export const Explore = () => {
   const [filters, setFilters] = useState(initialFilters);
   const [properties, setProperties] = useState<ApiProperty[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<ApiProperty[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch("http://localhost:8080/api/v1/properties")
       .then((res) => res.json())
       .then((data) => setProperties(data))
@@ -33,23 +37,25 @@ export const Explore = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const filteredProperties = properties.filter((p) => {
-    return (
-      // (!filters.department ||
-      //   String(p.city?.id).startsWith(filters.department)) && // Elimina o corrige esto si tienes la relación
-      (!filters.city || String(p.city?.id) === filters.city) &&
-      (!filters.type || p.propertyType === filters.type) &&
-      (!filters.operation || p.operationType === filters.operation) &&
-      (!filters.bedrooms ||
-        p.getNumberOfBedRooms >= parseInt(filters.bedrooms)) &&
-      (!filters.bathrooms ||
-        p.numberOfBathrooms >= parseInt(filters.bathrooms)) &&
-      (!filters.priceMin || p.price >= parseInt(filters.priceMin)) &&
-      (!filters.priceMax || p.price <= parseInt(filters.priceMax)) &&
-      (!filters.areaMin || p.area >= parseInt(filters.areaMin)) &&
-      (!filters.areaMax || p.area <= parseInt(filters.areaMax))
+  useEffect(() => {
+    setFilteredProperties(
+      properties.filter((p) => {
+        return (
+          (!filters.city || String(p.city?.id) === filters.city) &&
+          (!filters.type || p.propertyType === filters.type) &&
+          (!filters.operation || p.operationType === filters.operation) &&
+          (!filters.bedrooms ||
+            p.getNumberOfBedRooms >= parseInt(filters.bedrooms)) &&
+          (!filters.bathrooms ||
+            p.numberOfBathrooms >= parseInt(filters.bathrooms)) &&
+          (!filters.priceMin || p.price >= parseInt(filters.priceMin)) &&
+          (!filters.priceMax || p.price <= parseInt(filters.priceMax)) &&
+          (!filters.areaMin || p.area >= parseInt(filters.areaMin)) &&
+          (!filters.areaMax || p.area <= parseInt(filters.areaMax))
+        );
+      })
     );
-  });
+  }, [filters, properties]);
 
   return (
     <main>
@@ -77,7 +83,7 @@ export const Explore = () => {
               address: p.address,
               neighborhood: "",
               type: p.propertyType,
-              bedrooms: p.getNumberOfBedRooms,
+              bedrooms: p.getNumberOfBedRooms, 
               bathrooms: p.numberOfBathrooms,
               operation: p.operationType,
               price: p.price,
@@ -102,3 +108,4 @@ export const Explore = () => {
     </main>
   );
 };
+
