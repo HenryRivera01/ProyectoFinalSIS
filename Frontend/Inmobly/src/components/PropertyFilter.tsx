@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from "react";
+import {
+  useDepartments,
+  useCitiesByDepartment,
+} from "../features/properties/hooks";
+import { validateFilters } from "../features/properties/validateFilters";
 
 type FilterValues = {
   department: string;
@@ -18,44 +23,15 @@ type Props = {
   onChange: (filters: FilterValues) => void;
 };
 
-type Department = {
-  id: number;
-  name: string;
-};
-
-type City = {
-  id: number;
-  name: string;
-};
-
 export const PropertyFilter = ({ filters, onChange }: Props) => {
   const [localFilters, setLocalFilters] = useState(filters);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
+  const { departments } = useDepartments();
+  const { cities } = useCitiesByDepartment(localFilters.department);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
-
-  useEffect(() => {
-    fetch("http://localhost:8080/api/v1/location/departments")
-      .then((res) => res.json())
-      .then((data) => setDepartments(data))
-      .catch((err) => console.error("Error loading departments", err));
-  }, []);
-
-  useEffect(() => {
-    if (localFilters.department) {
-      fetch(
-        `http://localhost:8080/api/v1/location/departments/${localFilters.department}/cities`
-      )
-        .then((res) => res.json())
-        .then((data) => setCities(data))
-        .catch((err) => console.error("Error loading cities", err));
-    } else {
-      setCities([]);
-    }
-  }, [localFilters.department]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -63,14 +39,18 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     const { name, value } = e.target;
     setLocalFilters((prev) => ({
       ...prev,
-      [name]: value,
-      ...(name === "department" ? { city: "" } : {}), // reset city if department changes
+      [name]: value === "All" ? "" : value,
+      ...(name === "department" ? { city: "" } : {}),
     }));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onChange(localFilters);
+    const validationErrors = validateFilters(localFilters);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      onChange(localFilters);
+    }
   };
 
   return (
@@ -142,7 +122,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           onChange={handleChange}
         >
           <option value="">All operations</option>
-          <option value="SELL">Buy</option>
+          <option value="BUY">Buy</option>
           <option value="LEASE">Rent</option>
         </select>
 
@@ -215,8 +195,10 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           value={localFilters.areaMax}
           onChange={handleChange}
         />
-      </fieldset>
 
+        {errors.price && <span style={{ color: "red" }}>{errors.price}</span>}
+        {errors.area && <span style={{ color: "red" }}>{errors.area}</span>}
+      </fieldset>
       <button type="submit">Apply Filters</button>
     </form>
   );
