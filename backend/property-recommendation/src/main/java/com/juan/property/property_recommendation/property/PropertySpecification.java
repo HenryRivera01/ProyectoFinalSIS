@@ -1,6 +1,7 @@
 package com.juan.property.property_recommendation.property;
 
 import com.juan.property.property_recommendation.location.City;
+import com.juan.property.property_recommendation.location.Department;
 import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,7 @@ public class PropertySpecification  implements Specification<Property> {
     private String operationType;
     private String propertyType;
     private Integer cityId;
+    private Integer departmentId;
 
 
 
@@ -61,15 +63,6 @@ public class PropertySpecification  implements Specification<Property> {
 
         }
 
-        Join<Property, City> propertyCityJoin = root.join("city", JoinType.INNER);
-       // if(StringUtils.hasText(city)) {
-        if(cityId != null && cityId != 0) {
-           // Expression<String> cityNameToLowerCase = criteriaBuilder.upper(propertyCityJoin.get("name"));
-         //   Predicate cityNameLikePredicate = criteriaBuilder.like(cityNameToLowerCase, "%".concat(cityId.toLowerCase()).concat("%"));
-            Predicate cityNameLikePredicate = criteriaBuilder.equal(root.get("id"), cityId);
-            predicates.add(cityNameLikePredicate);
-
-        }
         if(StringUtils.hasText(operationType)){
             Expression<String> operationTypeToUpperCase = criteriaBuilder.upper(root.get("operationType")); //Este es el root   property.operationType
             Predicate operationTypeLikePredicate = criteriaBuilder.like(operationTypeToUpperCase, "%".concat(operationType.toUpperCase()).concat("%"));
@@ -79,6 +72,19 @@ public class PropertySpecification  implements Specification<Property> {
             Expression<String> propertyTypeToUpperCase = criteriaBuilder.upper(root.get("propertyType"));
             Predicate operationTypeLikePredicate = criteriaBuilder.like(propertyTypeToUpperCase, "%".concat(propertyType.toUpperCase()).concat("%"));
             predicates.add(operationTypeLikePredicate);
+        }
+        // Join con City
+        Join<Property, City> propertyCityJoin = root.join("city", JoinType.INNER);
+
+        // Filtro por cityId
+        if (cityId != null && cityId > 0) {
+            predicates.add(criteriaBuilder.equal(propertyCityJoin.get("id"), cityId));
+        }
+
+        // Join con Department a través de City
+        if (departmentId != null && departmentId > 0) {
+            Join<City, Department> cityDepartmentJoin = propertyCityJoin.join("department", JoinType.INNER);
+            predicates.add(criteriaBuilder.equal(cityDepartmentJoin.get("id"), departmentId));
         }
 
 

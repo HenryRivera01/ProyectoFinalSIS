@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/properties",consumes="application/json")
+@RequestMapping(value = "/properties")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class PropertyController {
@@ -40,7 +40,9 @@ public class PropertyController {
             @RequestParam(required = false) Integer numberOfBedrooms,
             @RequestParam(required = false) String operationType,
             @RequestParam(required = false) String propertyType,
-            @RequestParam(required = false) Integer city
+            @RequestParam(required = false) Integer cityId,
+            @RequestParam(required = false) Integer departmentId
+
     ){
         PropertySpecification propertySpecification = new PropertySpecification(minPrice,
                 maxPrice,
@@ -50,7 +52,8 @@ public class PropertyController {
                 numberOfBedrooms,
                 operationType,
                 propertyType,
-                city);
+                cityId,
+                departmentId);
         return propertyService.findAll(propertySpecification);
     }
 
