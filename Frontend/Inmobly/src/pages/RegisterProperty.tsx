@@ -1,37 +1,22 @@
 import { useEffect, useState } from "react";
 import { Navbar } from "../components/Navbar";
-
-type Department = {
-  id: number;
-  name: string;
-};
-
-type City = {
-  id: number;
-  name: string;
-};
-
-type FormData = {
-  description: string;
-  price: string;
-  operationType: "SELL" | "LEASE" | "";
-  propertyType: string;
-  department: Department | null;
-  city: City | null;
-  address: string;
-  area: string;
-  rooms: string;
-  bathrooms: string;
-  images: File[];
-};
+import {
+  fetchDepartments,
+  fetchCitiesByDepartment,
+} from "../features/properties/api";
+import type { Department, City } from "../features/properties/api";
+import {
+  type PropertyFormData,
+  type PropertyFormErrors,
+  validatePropertyForm,
+  generateRegistryNumber,
+} from "../features/properties/validatePropertyForm";
 
 export const RegisterProperty = () => {
-  const [formData, setFormData] = useState<FormData>({
-    description: "",
+  const [formData, setFormData] = useState<PropertyFormData>({
     price: "",
     operationType: "",
     propertyType: "",
-    department: null,
     city: null,
     address: "",
     area: "",
@@ -40,28 +25,26 @@ export const RegisterProperty = () => {
     images: [],
   });
 
+  const [errors, setErrors] = useState<PropertyFormErrors>({});
   const [departments, setDepartments] = useState<Department[]>([]);
   const [cities, setCities] = useState<City[]>([]);
+  const [department, setDepartment] = useState<Department | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/location/departments")
-      .then((res) => res.json())
-      .then((data) => setDepartments(data))
-      .catch((err) => console.error("Error cargando departamentos", err));
+    fetchDepartments()
+      .then(setDepartments)
+      .catch((err) => console.error("Error loading departments", err));
   }, []);
 
   useEffect(() => {
-    if (formData.department) {
-      fetch(
-        `http://localhost:8080/api/v1/location/departments/${formData.department.id}/cities`
-      )
-        .then((res) => res.json())
-        .then((data) => setCities(data))
-        .catch((err) => console.error("Error cargando ciudades", err));
+    if (department) {
+      fetchCitiesByDepartment(department.id)
+        .then(setCities)
+        .catch((err) => console.error("Error loading cities", err));
     } else {
       setCities([]);
     }
-  }, [formData.department]);
+  }, [department]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -107,51 +90,69 @@ export const RegisterProperty = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Get token from localStorage
+    const token = localStorage.getItem("authToken");
+
+    // Validate form
+    const validationErrors = validatePropertyForm(formData, token);
+    setErrors(validationErrors);
+
+    // If there are errors, return early
+    if (Object.keys(validationErrors).length > 0) {
+      // Display first error message
+      const firstError = Object.values(validationErrors)[0];
+      alert(firstError);
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("authToken");
-      const ownerId = localStorage.getItem("ownerId");
-
-      if (!token || !ownerId) {
-        alert("Authentication or ownerId missing");
-        return;
-      }
-
       const imageUrls = await uploadImagesToCloudinary(formData.images);
+      const registryNumber = generateRegistryNumber();
 
       const payload = {
-        registryNumber: Date.now(),
+        registryNumber,
         operationType: formData.operationType,
         address: formData.address,
-        price: parseFloat(formData.price),
-        area: parseFloat(formData.area),
+        price: Number(formData.price),
+        area: Number(formData.area),
         images: imageUrls,
-        numberOfBathrooms: parseInt(formData.bathrooms),
-        numberOfBedRooms: parseInt(formData.rooms),
-        cityId: formData.city?.id,
-        ownerId: Number(ownerId),
+        numberOfBathrooms: Number(formData.bathrooms),
+        numberOfBedrooms: Number(formData.rooms),
+        cityId: formData.city!.id,
         propertyType: formData.propertyType,
-        description: formData.description,
       };
+      console.log("Payload enviado:", payload);
 
       const res = await fetch("http://localhost:8080/api/v1/properties", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Auth-Token": token,
+          "X-Auth-Token": token!,
         },
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Error al registrar la propiedad");
+        let errorMsg = "Error al registrar la propiedad";
+        try {
+          const error = await res.json();
+          errorMsg = error.message || JSON.stringify(error);
+          console.error("Respuesta error backend:", error);
+        } catch {
+          const text = await res.text();
+          errorMsg = text;
+          console.error("Respuesta error backend (texto):", text);
+        }
+        alert("Error: " + errorMsg);
+        throw new Error(errorMsg);
       }
 
       alert("Propiedad registrada con éxito");
       console.log(await res.json());
     } catch (err) {
       console.error("Error:", err);
-      alert("Error al registrar la propiedad");
+      alert("Error al registrar la propiedad: " + (err as Error).message);
     }
   };
 
@@ -159,32 +160,34 @@ export const RegisterProperty = () => {
     <main>
       <Navbar />
       <form onSubmit={handleSubmit}>
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleChange}
-        />
         <input
           name="price"
           placeholder="Price"
           value={formData.price}
           onChange={handleChange}
+          className={errors.price ? "error" : ""}
         />
+        {errors.price && <span style={{ color: "red" }}>{errors.price}</span>}
+
         <select
           name="operationType"
           value={formData.operationType}
           onChange={handleChange}
+          className={errors.operationType ? "error" : ""}
         >
           <option value="">Operation type</option>
-          <option value="SELL">Sell</option>
+          <option value="BUY">Buy</option>
           <option value="LEASE">Lease</option>
         </select>
+        {errors.operationType && (
+          <span style={{ color: "red" }}>{errors.operationType}</span>
+        )}
 
         <select
           name="propertyType"
           value={formData.propertyType}
           onChange={handleChange}
+          className={errors.propertyType ? "error" : ""}
         >
           <option value="">Property type</option>
           <option value="BUILDING">Building</option>
@@ -199,6 +202,9 @@ export const RegisterProperty = () => {
           <option value="OFFICE_BUILDING">Office Building</option>
           <option value="APARTMENT_BUILDING">Apartment Building</option>
         </select>
+        {errors.propertyType && (
+          <span style={{ color: "red" }}>{errors.propertyType}</span>
+        )}
 
         <select
           name="department"
@@ -206,13 +212,13 @@ export const RegisterProperty = () => {
             const dep = departments.find(
               (d) => d.id === parseInt(e.target.value)
             );
+            setDepartment(dep || null);
             setFormData((prev) => ({
               ...prev,
-              department: dep || null,
               city: null,
             }));
           }}
-          value={formData.department?.id || ""}
+          value={department?.id || ""}
         >
           <option value="">Department</option>
           {departments.map((dep) => (
@@ -229,6 +235,7 @@ export const RegisterProperty = () => {
             const city = cities.find((c) => c.id === parseInt(e.target.value));
             setFormData((prev) => ({ ...prev, city: city || null }));
           }}
+          className={errors.city ? "error" : ""}
         >
           <option value="">City</option>
           {cities.map((city) => (
@@ -237,38 +244,57 @@ export const RegisterProperty = () => {
             </option>
           ))}
         </select>
+        {errors.city && <span style={{ color: "red" }}>{errors.city}</span>}
 
         <input
           name="address"
           placeholder="Address"
           value={formData.address}
           onChange={handleChange}
+          className={errors.address ? "error" : ""}
         />
+        {errors.address && (
+          <span style={{ color: "red" }}>{errors.address}</span>
+        )}
+
         <input
           name="area"
           placeholder="Area (m²)"
           value={formData.area}
           onChange={handleChange}
+          className={errors.area ? "error" : ""}
         />
+        {errors.area && <span style={{ color: "red" }}>{errors.area}</span>}
+
         <input
           name="rooms"
           placeholder="Bedrooms"
           value={formData.rooms}
           onChange={handleChange}
+          className={errors.rooms ? "error" : ""}
         />
+        {errors.rooms && <span style={{ color: "red" }}>{errors.rooms}</span>}
+
         <input
           name="bathrooms"
           placeholder="Bathrooms"
           value={formData.bathrooms}
           onChange={handleChange}
+          className={errors.bathrooms ? "error" : ""}
         />
+        {errors.bathrooms && (
+          <span style={{ color: "red" }}>{errors.bathrooms}</span>
+        )}
 
         <input
           type="file"
           multiple
           accept="image/*"
           onChange={handleImageChange}
+          className={errors.images ? "error" : ""}
         />
+        {errors.images && <span style={{ color: "red" }}>{errors.images}</span>}
+
         {formData.images.length > 0 && (
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             {formData.images.map((img, i) => (
