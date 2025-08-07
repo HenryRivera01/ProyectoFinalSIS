@@ -1,8 +1,8 @@
-package com.juan.property.property_recommendation.property;
+package com.juan.property.property_recommendation.register_property;
 
 import com.juan.property.property_recommendation.location.City;
 import com.juan.property.property_recommendation.location.CityRepository;
-import com.juan.property.property_recommendation.location.Department;
+import com.juan.property.property_recommendation.property.*;
 import com.juan.property.property_recommendation.property.dto.PropertyRequest;
 import com.juan.property.property_recommendation.property.dto.PropertyResponse;
 import com.juan.property.property_recommendation.property.service.PropertyService;
@@ -20,14 +20,16 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.juan.property.property_recommendation.property.OperationType.SELL;
-import static com.juan.property.property_recommendation.property.PropertyType.*;
+import static com.juan.property.property_recommendation.property.PropertyType.HOUSE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
-public class PropertyServiceTest {
+public class RegisterPropertyServiceTest {
 
     @Mock
     private PropertyRepository propertyRepository;
@@ -68,7 +70,7 @@ public class PropertyServiceTest {
                 .build();
 
         propertyRequest = PropertyRequest.builder()
-                .registryNumber(100100200L)
+                .registryNumber(1234567890L)
                 .operationType(OperationType.SELL)
                 .address("Calle 123 #45-67")
                 .price(BigDecimal.valueOf(350000000.0))
@@ -111,27 +113,10 @@ public class PropertyServiceTest {
     }
 
     // HAPPY PATH
-    @Test
-    public void findAllPropertiesSuccess(){
-        //Given
-        PropertySpecification spec = new PropertySpecification();
-
-        when(propertyRepository.findAll(spec)).thenReturn(List.of(property));
-        when(propertyMapper.propertyToDto(property)).thenReturn(propertyResponse);
-
-
-        //when
-        List<PropertyResponse> properties = propertyService.findAll(spec);
-
-
-        //then
-        assertThat(properties).isNotNull();
-        assertThat(properties.size()).isEqualTo(1);
-    }
 
     @Test
     public void registerPropertySuccess(){
-         //Given
+        //Given
         when(cityRepository.findById(propertyRequest.getCityId())).thenReturn(Optional.of(city));
         when(propertyMapper.dtoToProperty(propertyRequest)).thenReturn(property);
         when(propertyRepository.save(property)).thenReturn(property);
@@ -142,9 +127,8 @@ public class PropertyServiceTest {
         PropertyResponse propertyResponse = propertyService.register(propertyRequest, user);
 
         //then
-        assertThat(propertyResponse).isNotNull();
         assertEquals(100100200L, propertyResponse.getRegistryNumber()); assertThat(propertyResponse).isNotNull();
-        assertEquals(100100200L, propertyResponse.getRegistryNumber());
+
     }
 
 
@@ -181,8 +165,102 @@ public class PropertyServiceTest {
 
     }
 
+    @Test
+    public void testInvalidCityId(){
+        //given
+        propertyRequest.setCityId(-1);
+
+        //when & then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+
+        assertEquals("The city id is not valid", exception.getMessage());
+    }
+
+    @Test
+    public void testInvalidRegistryNumber() {
+        // given: un número de registro inválido
+        propertyRequest.setRegistryNumber(123L); // menos de 10 dígitos
+
+        // when & then: deber lanzar IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+
+        assertEquals("The registry number is not valid", exception.getMessage());
+    }
 
 
+    @Test
+    public void testInvalidAddress() {
+        propertyRequest.setAddress("");
 
+        // when & then: deber lanzar IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
 
+        assertEquals("The address is not valid", exception.getMessage());
+    }
+
+    @Test
+    public void testInvalidArea() {
+        // given: un número de registro inválido
+        propertyRequest.setArea(-23.0);
+
+        // when & then: deber lanzar IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+
+        assertEquals("The area is not valid", exception.getMessage());
+    }
+
+    @Test
+    public void testInvalidPrice() {
+        propertyRequest.setPrice(null);
+
+        // when & then: deber lanzar IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+
+        assertEquals("The price is not valid", exception.getMessage());
+    }
+
+    @Test
+    public void testInvalidImageList() {
+        propertyRequest.setImages(List.of("img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg"));
+
+        // when & then: deber lanzar IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+
+        assertEquals("The image list is not valid", exception.getMessage());
+    }
+
+    @Test
+    public void testInvalidNumberOfBathrooms() {
+        propertyRequest.setNumberOfBathrooms(-20);
+
+        // when & then: deber lanzar IllegalArgumentException
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+
+        assertEquals("The number of bathrooms is not valid", exception.getMessage());
+    }
+
+    @Test
+    public void testInvalidNumberOfBedrooms() {
+        propertyRequest.setNumberOfBedrooms(-20);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            propertyService.register(propertyRequest, user);
+        });
+
+        assertEquals("The number of bedrooms is not valid", exception.getMessage());
+    }
 }

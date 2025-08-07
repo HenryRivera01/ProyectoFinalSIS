@@ -14,7 +14,9 @@ import java.util.List;
 public class Department {
     @Id
     @GeneratedValue
+    @Column(nullable = false)
     private Integer id;
+    @Column(nullable = false)
     public String name;
 
     @OneToMany( mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)

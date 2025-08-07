@@ -3,7 +3,7 @@ spring:
     url: jdbc:h2:mem:property_test_db
     driver-class-name: org.h2.Driver
     username: sa
-    password:
+    password: password
   sql:
     init:
       mode: always

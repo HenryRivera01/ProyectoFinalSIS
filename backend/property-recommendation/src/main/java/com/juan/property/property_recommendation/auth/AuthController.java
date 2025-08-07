@@ -4,6 +4,7 @@ import com.juan.property.property_recommendation.auth.dto.RegisterRequest;
 import com.juan.property.property_recommendation.auth.dto.AuthRequest;
 import com.juan.property.property_recommendation.auth.dto.AuthResponse;
 import com.juan.property.property_recommendation.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public String register(
-            @RequestBody RegisterRequest registerRequest
+            @RequestBody @Valid RegisterRequest registerRequest
     ) {
         authService.register(registerRequest);
         return "User registered successfully";
@@ -30,7 +31,7 @@ public class AuthController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(
-            @RequestBody AuthRequest authRequest
+            @RequestBody @Valid AuthRequest authRequest
     ) {
         return new AuthResponse(authService.login(authRequest));
     }

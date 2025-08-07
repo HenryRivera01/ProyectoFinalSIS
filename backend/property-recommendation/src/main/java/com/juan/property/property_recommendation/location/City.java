@@ -16,7 +16,9 @@ import java.util.List;
 public class City {
     @Id
     @GeneratedValue
+    @Column(nullable = false)
     private Integer id;
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,6 +27,6 @@ public class City {
 
     @ManyToOne()
     @JsonIgnore
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 }
