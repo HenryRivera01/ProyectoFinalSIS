@@ -22,6 +22,9 @@ export const PropertyCard = ({ property, onClick }: Props) => {
   const deptName = (property as unknown as { department?: { name: string } })
     ?.department?.name;
 
+  const bedrooms =
+    property.numberOfBedrooms ?? property.numberOfBedRooms ?? 0;
+
   return (
     <article className="property-card" onClick={onClick}>
       <div className="property-image-wrapper">
@@ -54,7 +57,7 @@ export const PropertyCard = ({ property, onClick }: Props) => {
           </li>
           <li className="feature-item beds">
             <span className="feature-label">
-              {property.numberOfBedRooms} bedrooms
+              {bedrooms} bedrooms
             </span>
           </li>
         </ul>
@@ -75,3 +78,4 @@ export const PropertyCard = ({ property, onClick }: Props) => {
     </article>
   );
 };
+  

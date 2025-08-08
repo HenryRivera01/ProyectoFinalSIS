@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import type { ApiProperty } from "../features/properties/types";
 import { fetchProperties } from "../features/properties/api";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { getBedrooms } from "../features/properties/types";
 
 const initialFilters = {
   department: "",
@@ -77,17 +78,22 @@ export const Explore = () => {
   useEffect(() => {
     setFilteredProperties(
       properties.filter((p) => {
+        const minBedrooms = filters.bedrooms ? Number(filters.bedrooms) : 0;
+        const minBathrooms = filters.bathrooms ? Number(filters.bathrooms) : 0;
+        const priceMin = filters.priceMin ? Number(filters.priceMin) : 0;
+        const priceMax = filters.priceMax ? Number(filters.priceMax) : Infinity;
+        const areaMin = filters.areaMin ? Number(filters.areaMin) : 0;
+        const areaMax = filters.areaMax ? Number(filters.areaMax) : Infinity;
+
         return (
           (!filters.type || p.propertyType === filters.type) &&
           (!filters.operation || p.operationType === filters.operation) &&
-          (!filters.bedrooms ||
-            p.numberOfBedRooms >= parseInt(filters.bedrooms)) &&
-          (!filters.bathrooms ||
-            p.numberOfBathrooms >= parseInt(filters.bathrooms)) &&
-          (!filters.priceMin || p.price >= parseInt(filters.priceMin)) &&
-          (!filters.priceMax || p.price <= parseInt(filters.priceMax)) &&
-          (!filters.areaMin || p.area >= parseInt(filters.areaMin)) &&
-          (!filters.areaMax || p.area <= parseInt(filters.areaMax))
+          (!minBedrooms || getBedrooms(p) >= minBedrooms) &&
+          (!minBathrooms || p.numberOfBathrooms >= minBathrooms) &&
+          (!filters.priceMin || p.price >= priceMin) &&
+          (!filters.priceMax || p.price <= priceMax) &&
+          (!filters.areaMin || p.area >= areaMin) &&
+          (!filters.areaMax || p.area <= areaMax)
         );
       })
     );

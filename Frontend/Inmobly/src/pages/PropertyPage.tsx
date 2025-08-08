@@ -68,12 +68,12 @@ export const PropertyPage = () => {
     area,
     images = [],
     numberOfBathrooms,
-    numberOfBedRooms,
     city,
     ownerEmail,
     ownerPhoneNumber,
     propertyType,
   } = property;
+  const bedrooms = property.numberOfBedrooms ?? property.numberOfBedRooms ?? 0;
 
   const totalImages = images?.length || 0;
 
@@ -181,7 +181,7 @@ export const PropertyPage = () => {
                 <span>{numberOfBathrooms} baths</span>
               </li>
               <li className="feature-item beds">
-                <span>{numberOfBedRooms} bedrooms</span>
+                <span>{bedrooms} bedrooms</span>
               </li>
             </ul>
 
