@@ -15,7 +15,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-public class AuthenticateRepository {
+public class AuthenticateRepositoryTest {
     @Autowired
     private SessionTokenRepository sessionTokenRepository;
 

@@ -5,7 +5,6 @@ import com.juan.property.property_recommendation.location.CityRepository;
 import com.juan.property.property_recommendation.location.Department;
 import com.juan.property.property_recommendation.location.DepartmentRepository;
 import com.juan.property.property_recommendation.location.dto.CityResponse;
-import com.juan.property.property_recommendation.location.dto.DepartmentResponse;
 import com.juan.property.property_recommendation.location.mapper.CityMapper;
 import com.juan.property.property_recommendation.location.mapper.DepartmentMapper;
 import com.juan.property.property_recommendation.location.service.LocationService;
@@ -16,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +23,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FindAllcitiesByDepartmentService {
+public class FindAllcitiesByDepartmentServiceTest {
 
     @Mock
     private DepartmentRepository departmentRepository;
@@ -43,8 +41,7 @@ public class FindAllcitiesByDepartmentService {
     private LocationService locationService;
 
     @Test
-    @DisplayName("Debe retornar todas las ciudades de un departamento existente")
-    void findAllCitiesByValidDepartmentId_shouldReturnCities() {
+    void testFindAllCitiesByValidDepartmentId() {
         // Arrange
         Department department = Department.builder()
                 .id(1)
@@ -75,12 +72,9 @@ public class FindAllcitiesByDepartmentService {
     }
 
     @Test
-    @DisplayName("Debe lanzar excepción si el departamento no existe")
-    void findAllCitiesByInvalidDepartmentId_shouldThrowException() {
-        // Arrange
+    void testFindAllCitiesByInvalidDepartmentId() {
         when(departmentRepository.findById(999)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThatThrownBy(() -> locationService.findAllCitiesByDepartmentId(999))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Department not found");

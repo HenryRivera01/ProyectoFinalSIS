@@ -7,6 +7,7 @@ import com.juan.property.property_recommendation.location.dto.CityResponse;
 import com.juan.property.property_recommendation.location.dto.DepartmentResponse;
 import com.juan.property.property_recommendation.location.mapper.CityMapper;
 import com.juan.property.property_recommendation.location.mapper.DepartmentMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,9 @@ public class LocationService implements ILocationService {
     @Override
     public List<CityResponse> findAllCitiesByDepartmentId(Integer departmentId) {
         Optional<Department> department = departmentRepository.findById(departmentId);
+
         if (department.isEmpty()) {
-            throw new RuntimeException("Department not found");
+            throw new EntityNotFoundException("Department not found");
         }
         return cityRepository.findByDepartment(department.get()).stream().map(cityMapper::toCityResponse).collect(Collectors.toList());
     }

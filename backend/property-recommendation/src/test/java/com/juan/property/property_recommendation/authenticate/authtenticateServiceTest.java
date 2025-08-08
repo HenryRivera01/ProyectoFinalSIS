@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
-public class authtenticateService {
+public class authtenticateServiceTest {
 
     @Mock
     private SessionTokenRepository sessionTokenRepository;
@@ -57,7 +57,7 @@ public class authtenticateService {
     // ❌ EDGE CASES
 
     @Test
-    void authenticateWithNullToken_shouldThrowException() {
+    void testAuthenticateWithNullToken() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authService.authenticate(null);
         });
@@ -66,7 +66,7 @@ public class authtenticateService {
     }
 
     @Test
-    void authenticateWithBlankToken_shouldThrowException() {
+    void testAuthenticateWithBlankToken() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authService.authenticate("   ");
         });
@@ -75,7 +75,7 @@ public class authtenticateService {
     }
 
     @Test
-    void authenticateWithNonExistentToken_shouldReturnEmptyOptional() {
+    void estAuthenticateWithNonExistentToken() {
         when(sessionTokenRepository.findByToken("non-existent-token"))
                 .thenReturn(Optional.empty());
 

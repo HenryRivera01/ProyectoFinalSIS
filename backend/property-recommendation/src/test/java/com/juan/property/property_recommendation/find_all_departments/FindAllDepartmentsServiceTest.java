@@ -19,7 +19,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FindAllDepartmentsService {
+public class FindAllDepartmentsServiceTest {
 
     @Mock
     private DepartmentRepository departmentRepository;
@@ -31,9 +31,7 @@ public class FindAllDepartmentsService {
     private LocationService locationService;
 
     @Test
-    @DisplayName("findAllDepartment - should return list of mapped DepartmentResponses")
-    void findAllDepartment_shouldReturnMappedDepartments() {
-        // Arrange
+    void testFindAllDepartment() {
         Department department1 = Department.builder().id(1).name("Cundinamarca").build();
         Department department2 = Department.builder().id(2).name("Antioquia").build();
         List<Department> departments = Arrays.asList(department1, department2);
@@ -45,10 +43,8 @@ public class FindAllDepartmentsService {
         when(departmentMapper.toDepartmentResponse(department1)).thenReturn(response1);
         when(departmentMapper.toDepartmentResponse(department2)).thenReturn(response2);
 
-        // Act
         List<DepartmentResponse> result = locationService.findAllDepartment();
 
-        // Assert
         assertThat(result).hasSize(2);
         assertThat(result).containsExactly(response1, response2);
         verify(departmentRepository).findAll();

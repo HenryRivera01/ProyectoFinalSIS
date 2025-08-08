@@ -31,8 +31,7 @@ public class LoginController {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("POST /auth/login - should return token when request is valid")
-    void loginWithValidCredentials_shouldReturnToken() throws Exception {
+    void testLginWithValidCredentials() throws Exception {
         AuthRequest request = new AuthRequest("juan@example.com", "123456");
         String token = "abc123xyz";
 
@@ -47,8 +46,7 @@ public class LoginController {
     }
 
     @Test
-    @DisplayName("POST /auth/login - should return 400 when email is blank")
-    void loginWithBlankEmail_shouldReturnBadRequest() throws Exception {
+    void testLoginWithBlankEmail() throws Exception {
         AuthRequest request = new AuthRequest("   ", "123456");
 
         mockMvc.perform(post("/auth/login")
@@ -58,8 +56,7 @@ public class LoginController {
     }
 
     @Test
-    @DisplayName("POST /auth/login - should return 400 when email is invalid format")
-    void loginWithInvalidEmail_shouldReturnBadRequest() throws Exception {
+    void testLoginWithInvalidEmail() throws Exception {
         AuthRequest request = new AuthRequest("not-an-email", "123456");
 
         mockMvc.perform(post("/auth/login")
@@ -70,8 +67,7 @@ public class LoginController {
     }
 
     @Test
-    @DisplayName("POST /auth/login - should return 400 when password is blank")
-    void loginWithBlankPassword_shouldReturnBadRequest() throws Exception {
+    void testLoginWithBlankPassword_shouldReturnBadRequest() throws Exception {
         AuthRequest request = new AuthRequest("juan@example.com", "  ");
 
         mockMvc.perform(post("/auth/login")

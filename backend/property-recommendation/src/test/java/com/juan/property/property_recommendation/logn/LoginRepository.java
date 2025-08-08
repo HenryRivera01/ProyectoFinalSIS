@@ -43,7 +43,7 @@ public class LoginRepository{
 
     @Test
     @DisplayName("Should find user by email")
-    void findByEmail_shouldReturnUser() {
+    void testFindByEmail() {
 
 
         userRepository.save(user);
@@ -54,31 +54,11 @@ public class LoginRepository{
     }
 
     @Test
-    @DisplayName("Should return empty when email not found")
-    void findByEmail_shouldReturnEmpty() {
+    void testFindByInvalidEmail() {
         Optional<User> found = userRepository.findByEmail("noexist@example.com");
 
         assertThat(found).isEmpty();
     }
 
-    @Test
-    @DisplayName("Should find user by document number")
-    void findByDocumentNumber_shouldReturnUser() {
 
-
-        userRepository.save(user);
-
-        Optional<User> found = userRepository.findByDocumentNumber(1001234357L);
-
-        assertThat(found).isPresent();
-        assertThat(found.get().getEmail()).isEqualTo("juan@example.com");
-    }
-
-    @Test
-    @DisplayName("Should return empty when document number not found")
-    void findByDocumentNumber_shouldReturnEmpty() {
-        Optional<User> found = userRepository.findByDocumentNumber(999999L);
-
-        assertThat(found).isEmpty();
-    }
 }

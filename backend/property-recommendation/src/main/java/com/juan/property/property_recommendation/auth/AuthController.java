@@ -3,6 +3,7 @@ package com.juan.property.property_recommendation.auth;
 import com.juan.property.property_recommendation.auth.dto.RegisterRequest;
 import com.juan.property.property_recommendation.auth.dto.AuthRequest;
 import com.juan.property.property_recommendation.auth.dto.AuthResponse;
+import com.juan.property.property_recommendation.auth.dto.RegisterResponse;
 import com.juan.property.property_recommendation.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,11 +21,11 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public String register(
+    public RegisterResponse register(
             @RequestBody @Valid RegisterRequest registerRequest
     ) {
-        authService.register(registerRequest);
-        return "User registered successfully";
+      return   authService.register(registerRequest);
+
     }
 
 

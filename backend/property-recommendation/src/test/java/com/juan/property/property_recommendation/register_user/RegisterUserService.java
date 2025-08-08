@@ -1,14 +1,18 @@
 package com.juan.property.property_recommendation.register_user;
 
 
+import com.juan.property.property_recommendation.auth.AuthMapper;
 import com.juan.property.property_recommendation.auth.dto.RegisterRequest;
+import com.juan.property.property_recommendation.auth.dto.RegisterResponse;
 import com.juan.property.property_recommendation.auth.service.AuthService;
 import com.juan.property.property_recommendation.user.DocumentType;
 import com.juan.property.property_recommendation.user.User;
 import com.juan.property.property_recommendation.user.UserRepository;
+import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,6 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +33,13 @@ public class RegisterUserService {
     @InjectMocks
     private AuthService authService;
 
+
+    @Mock
+    private AuthMapper authMapper;
+
     private RegisterRequest validRequest;
+    private User user;
+    private RegisterResponse response;
 
     @BeforeEach
     public void setUp() {
@@ -40,28 +52,43 @@ public class RegisterUserService {
                 .phoneNumber(3001234567L)
                 .password("securePassword123")
                 .build();
+        user = User.builder()
+                .email("juan@email.com")
+                .documentType(DocumentType.CC)
+                .documentNumber(1234567890L)
+                .firstName("Juan")
+                .lastName("Pérez")
+                .phoneNumber(3001234567L)
+                .password("securePassword123")
+                .build();
     }
 
     // ✅ HAPPY PATH
+
     @Test
-    public void registerUserSuccessfully() {
-        when(userRepository.findByEmail(validRequest.getEmail())).thenReturn(Optional.empty());
+    void registerUserSuccessfully_minimal() {
+        when(userRepository.findByDocumentNumber(validRequest.getDocumentNumber()))
+                .thenReturn(Optional.empty());
+        when(userRepository.findByEmail(validRequest.getEmail()))
+                .thenReturn(Optional.empty());
 
-        assertDoesNotThrow(() -> authService.register(validRequest));
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
-       // verify(userRepository, times(1)).save(any(User.class));
+        when(authMapper.registerUserToDto(any(User.class))).thenReturn(response);
+
+        RegisterResponse actualResponse = authService.register(validRequest);
+
+        assertEquals(response, actualResponse);
     }
-
-    // ❌ EDGE CASES
+    // EDGE CASES
 
     @Test
     public void registerWithExistingEmailShouldThrowException() {
         when(userRepository.findByEmail(validRequest.getEmail())).thenReturn(Optional.of(new User()));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> authService.register(validRequest));
+        RuntimeException exception = assertThrows(EntityExistsException.class, () -> authService.register(validRequest));
         assertEquals("This email is already registered", exception.getMessage());
 
-       // verify(userRepository, never()).save(any());
     }
 
     @Test
@@ -71,7 +98,6 @@ public class RegisterUserService {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> authService.register(validRequest));
         assertEquals("All fields are required and must not be null or blank.", exception.getMessage());
 
-        //verify(userRepository, never()).save(any());
     }
 
     @Test
@@ -86,11 +112,10 @@ public class RegisterUserService {
     public void registerWithExistingDocumentNumberShouldThrowException() {
         validRequest.setDocumentNumber(1234567890L);
 
-        // Simula que ya existe un usuario con esa cédula
         when(userRepository.findByDocumentNumber(validRequest.getDocumentNumber()))
                 .thenReturn(Optional.of(new User()));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        EntityExistsException exception = assertThrows(EntityExistsException.class, () -> {
             authService.register(validRequest);
         });
 

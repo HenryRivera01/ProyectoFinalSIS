@@ -84,18 +84,6 @@ public class RegisterPropertyRepositoryTest {
     }
 
 
-    //happy path
-//    @Test // nova
-//    public void testFindPropertyByRegistryNumber() {
-//        testEntityManager.persist(user);
-//        testEntityManager.persist(city);
-//        testEntityManager.persist(property);
-//
-//        Optional<Property> found  = propertyRepository.findByRegistryNumber(property.getRegistryNumber());
-//
-//        found.ifPresent(value -> assertEquals(value.getRegistryNumber(), property.getRegistryNumber()));
-//
-//    }
     @Test
     public void testRegisterProperty() {
         userRepository.save(user);

@@ -1,13 +1,12 @@
 package com.juan.property.property_recommendation.handler;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +29,14 @@ public class GlobalExeptionHandler{
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleRuntimeException(EntityNotFoundException ex) {
-        if (ex.getMessage().equalsIgnoreCase("Department not found")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity not found");
+    }
+
+    @ExceptionHandler(EntityExistsException.class)
+    public ResponseEntity<String> handleEntityExistException(EntityExistsException ex) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Entity not found");
     }
 }
 

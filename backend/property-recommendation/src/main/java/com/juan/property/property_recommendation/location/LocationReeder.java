@@ -19,14 +19,12 @@ public class LocationReeder  implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (departmentRepository.count() == 0) {
-            // Leer archivo JSON
             InputStream input = getClass().getResourceAsStream("/data/colombia.json");
             ObjectMapper mapper = new ObjectMapper();
             List<DepartmentData> data = Arrays.asList(
                     mapper.readValue(input, DepartmentData[].class)
             );
 
-            // Mapear y guardar
             for (DepartmentData dto : data) {
                 Department dept = new Department();
                 dept.setName(dto.getDepartamento());

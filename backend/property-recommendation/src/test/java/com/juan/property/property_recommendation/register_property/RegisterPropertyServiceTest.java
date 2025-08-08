@@ -115,18 +115,14 @@ public class RegisterPropertyServiceTest {
     // HAPPY PATH
 
     @Test
-    public void registerPropertySuccess(){
-        //Given
+    public void testRegisterPropertySuccess(){
         when(cityRepository.findById(propertyRequest.getCityId())).thenReturn(Optional.of(city));
         when(propertyMapper.dtoToProperty(propertyRequest)).thenReturn(property);
         when(propertyRepository.save(property)).thenReturn(property);
         when(propertyMapper.propertyToDto(property)).thenReturn(propertyResponse);
 
-        //when
-
         PropertyResponse propertyResponse = propertyService.register(propertyRequest, user);
 
-        //then
         assertEquals(100100200L, propertyResponse.getRegistryNumber()); assertThat(propertyResponse).isNotNull();
 
     }
@@ -134,15 +130,12 @@ public class RegisterPropertyServiceTest {
 
     //EDGE CASES
     @Test
-    public void registerPropertyWithUnexistedCity(){
+    public void testRegisterPropertyWithUnexistedCity(){
 
-        // Given
         when(cityRepository.findById(propertyRequest.getCityId())).thenReturn(Optional.empty());
-        // When
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
-        // Then
         assertEquals("The city  does not exist", exception.getMessage());
         verify(cityRepository, times(1)).findById(propertyRequest.getCityId());
         verify(propertyRepository, never()).save(any());
@@ -150,15 +143,12 @@ public class RegisterPropertyServiceTest {
     }
 
     @Test
-    public void registerPropertyThatAlreadyExists(){
+    public void testRegisterPropertyThatAlreadyExists(){
 
-        // Given
         when(propertyRepository.findByRegistryNumber(propertyRequest.getRegistryNumber())).thenReturn(Optional.of(property));
-        // When
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
-        // Then
         assertEquals("The property already exists", exception.getMessage());
         verify(propertyRepository, times(1)).findByRegistryNumber(propertyRequest.getRegistryNumber());
         verify(propertyRepository, never()).save(any());
@@ -167,10 +157,8 @@ public class RegisterPropertyServiceTest {
 
     @Test
     public void testInvalidCityId(){
-        //given
         propertyRequest.setCityId(-1);
 
-        //when & then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
@@ -180,10 +168,8 @@ public class RegisterPropertyServiceTest {
 
     @Test
     public void testInvalidRegistryNumber() {
-        // given: un número de registro inválido
-        propertyRequest.setRegistryNumber(123L); // menos de 10 dígitos
+        propertyRequest.setRegistryNumber(123L);
 
-        // when & then: deber lanzar IllegalArgumentException
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
@@ -196,7 +182,6 @@ public class RegisterPropertyServiceTest {
     public void testInvalidAddress() {
         propertyRequest.setAddress("");
 
-        // when & then: deber lanzar IllegalArgumentException
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
@@ -206,10 +191,8 @@ public class RegisterPropertyServiceTest {
 
     @Test
     public void testInvalidArea() {
-        // given: un número de registro inválido
         propertyRequest.setArea(-23.0);
 
-        // when & then: deber lanzar IllegalArgumentException
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
@@ -221,7 +204,6 @@ public class RegisterPropertyServiceTest {
     public void testInvalidPrice() {
         propertyRequest.setPrice(null);
 
-        // when & then: deber lanzar IllegalArgumentException
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
@@ -233,7 +215,6 @@ public class RegisterPropertyServiceTest {
     public void testInvalidImageList() {
         propertyRequest.setImages(List.of("img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg"));
 
-        // when & then: deber lanzar IllegalArgumentException
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
@@ -245,7 +226,6 @@ public class RegisterPropertyServiceTest {
     public void testInvalidNumberOfBathrooms() {
         propertyRequest.setNumberOfBathrooms(-20);
 
-        // when & then: deber lanzar IllegalArgumentException
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             propertyService.register(propertyRequest, user);
         });
