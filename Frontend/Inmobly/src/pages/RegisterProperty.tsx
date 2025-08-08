@@ -12,6 +12,10 @@ import {
   validatePropertyForm,
   generateRegistryNumber,
 } from "../features/properties/validatePropertyForm";
+import {
+  formatMoneyDigits,
+  stripMoneyFormatting,
+} from "../features/properties/moneyFormat";
 
 export const RegisterProperty = () => {
   const [formData, setFormData] = useState<PropertyFormData>({
@@ -57,6 +61,11 @@ export const RegisterProperty = () => {
     >
   ) => {
     const { name, value } = e.target;
+    if (name === "price") {
+      const digits = stripMoneyFormatting(value);
+      setFormData((prev) => ({ ...prev, price: digits }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -183,43 +192,9 @@ export const RegisterProperty = () => {
         <div className="auth-card property-form-card">
           <h1 className="auth-title">Register Property</h1>
           <form onSubmit={handleSubmit} className="auth-form property-form">
-            <div className="form-field">
-              <div className="price-input-wrapper full-width">
-                <span className="price-prefix">$</span>
-                <input
-                  className={`auth-input price-input ${
-                    errors.price ? "input-error" : ""
-                  }`}
-                  name="price"
-                  placeholder="Price (COP)"
-                  value={formData.price}
-                  onChange={handleChange}
-                  inputMode="numeric"
-                />
-              </div>
-              {errors.price && (
-                <span className="field-error">{errors.price}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <select
-                name="operationType"
-                value={formData.operationType}
-                onChange={handleChange}
-                className={`auth-input ${
-                  errors.operationType ? "input-error" : ""
-                }`}
-              >
-                <option value="">Operation type</option>
-                <option value="BUY">Sell</option>
-                <option value="LEASE">Lease</option>
-              </select>
-              {errors.operationType && (
-                <span className="field-error">{errors.operationType}</span>
-              )}
-            </div>
-
+            {/* Section: Basic Info */}
+            <h2 className="form-section-title">Basic info</h2>
+            {/* Reordenado: 1) Property Type */}
             <div className="form-field">
               <select
                 name="propertyType"
@@ -247,6 +222,47 @@ export const RegisterProperty = () => {
               )}
             </div>
 
+            {/* 2) Operation Type */}
+            <div className="form-field">
+              <select
+                name="operationType"
+                value={formData.operationType}
+                onChange={handleChange}
+                className={`auth-input ${
+                  errors.operationType ? "input-error" : ""
+                }`}
+              >
+                <option value="">Operation type</option>
+                <option value="BUY">Sell</option>
+                <option value="LEASE">Lease</option>
+              </select>
+              {errors.operationType && (
+                <span className="field-error">{errors.operationType}</span>
+              )}
+            </div>
+
+            {/* 3) Price */}
+            <div className="form-field">
+              <div className="price-input-wrapper full-width">
+                <input
+                  className={`auth-input price-input ${
+                    errors.price ? "input-error" : ""
+                  }`}
+                  name="price"
+                  placeholder="Price (COP)"
+                  value={formatMoneyDigits(formData.price)}
+                  onChange={handleChange}
+                  inputMode="numeric"
+                />
+              </div>
+              {errors.price && (
+                <span className="field-error">{errors.price}</span>
+              )}
+            </div>
+
+            {/* Section: Location */}
+            <h2 className="form-section-title">Location</h2>
+            {/* Department */}
             <div className="form-field">
               <select
                 name="department"
@@ -269,6 +285,7 @@ export const RegisterProperty = () => {
               </select>
             </div>
 
+            {/* City */}
             <div className="form-field">
               <select
                 name="city"
@@ -293,6 +310,7 @@ export const RegisterProperty = () => {
               )}
             </div>
 
+            {/* Address */}
             <div className="form-field">
               <input
                 name="address"
@@ -306,6 +324,8 @@ export const RegisterProperty = () => {
               )}
             </div>
 
+            {/* Section: Features */}
+            <h2 className="form-section-title">Features</h2>
             <div className="form-row-dual">
               <div className="form-field">
                 <input

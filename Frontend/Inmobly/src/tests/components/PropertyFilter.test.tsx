@@ -1,7 +1,5 @@
-
 import "@testing-library/jest-dom";
 import { validateFilters } from "../../features/properties/validateFilters";
-
 
 describe("validateFilters", () => {
   it("Given all fields are empty, When validating filters, Then returns no errors", () => {
@@ -87,6 +85,40 @@ describe("validateFilters", () => {
     };
     const errors = validateFilters(filters);
     expect(errors.price).toBe("Max price must be greater than zero");
+  });
+
+  it("Given negative min price, When validating filters, Then returns unified price error", () => {
+    const filters = {
+      department: "",
+      city: "",
+      type: "",
+      operation: "",
+      bedrooms: "",
+      bathrooms: "",
+      priceMin: "-10",
+      priceMax: "",
+      areaMin: "",
+      areaMax: "",
+    };
+    const errors = validateFilters(filters);
+    expect(errors.price).toBe("Price must be greater than zero");
+  });
+
+  it("Given negative min area, When validating filters, Then returns unified area error", () => {
+    const filters = {
+      department: "",
+      city: "",
+      type: "",
+      operation: "",
+      bedrooms: "",
+      bathrooms: "",
+      priceMin: "",
+      priceMax: "",
+      areaMin: "-5",
+      areaMax: "",
+    };
+    const errors = validateFilters(filters);
+    expect(errors.area).toBe("Area must be greater than zero");
   });
 
   // Case: Invalid city id
@@ -320,4 +352,3 @@ describe("validateFilters", () => {
     expect(errors).toEqual({});
   });
 });
-

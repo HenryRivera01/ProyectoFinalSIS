@@ -1673,3 +1673,12 @@ body {
   color: #fff;
   box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.35);
 }
+
+.form-section-title {
+  margin: 0.4rem 0 0.1rem;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #415363;
+}

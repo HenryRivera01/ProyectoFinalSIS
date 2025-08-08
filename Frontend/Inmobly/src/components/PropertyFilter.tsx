@@ -4,6 +4,7 @@ import {
   useCitiesByDepartment,
 } from "../features/properties/hooks";
 import { validateFilters } from "../features/properties/validateFilters";
+import { formatMoneyDigits, stripMoneyFormatting } from "../features/properties/moneyFormat";
 
 type FilterValues = {
   department: string;
@@ -138,6 +139,12 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     } else {
       setStatus({ type: "error", message: "Invalid area range" });
     }
+  };
+
+  const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const digits = stripMoneyFormatting(value);
+    setLocalFilters(prev => ({ ...prev, [name]: digits }));
   };
 
   return (
@@ -322,21 +329,25 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
           <div className="range-header">Price range</div>
           <div className="range-row">
             <input
-              type="number"
+              type="text"
               name="priceMin"
               className="range-input"
-              placeholder="Min $"
-              value={localFilters.priceMin}
-              onChange={handleChange}
+              placeholder="$ Min"
+              value={formatMoneyDigits(localFilters.priceMin)}
+              onChange={handleMoneyChange}
+              inputMode="numeric"
+              autoComplete="off"
             />
             <span className="range-sep">-</span>
             <input
-              type="number"
+              type="text"
               name="priceMax"
               className="range-input"
-              placeholder="Max $"
-              value={localFilters.priceMax}
-              onChange={handleChange}
+              placeholder="$ Max"
+              value={formatMoneyDigits(localFilters.priceMax)}
+              onChange={handleMoneyChange}
+              inputMode="numeric"
+              autoComplete="off"
             />
           </div>
           {errors.price && <div className="range-error">{errors.price}</div>}
