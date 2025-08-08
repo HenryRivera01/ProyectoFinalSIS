@@ -19,7 +19,15 @@ export function validateFilters(
 ): Record<string, string> {
   const errors: Record<string, string> = {};
 
+  // Price
+  if (filters.priceMax && Number(filters.priceMax) <= 0) {
+    errors.price = "Max price must be greater than zero";
+  }
+  if (!errors.price && filters.priceMin && Number(filters.priceMin) < 0) {
+    errors.price = "Price must be greater than zero";
+  }
   if (
+    !errors.price &&
     filters.priceMin &&
     filters.priceMax &&
     Number(filters.priceMin) > Number(filters.priceMax)
@@ -27,22 +35,20 @@ export function validateFilters(
     errors.price = "Min price cannot be greater than max price";
   }
 
-  // Validación adicional para precio máximo
-  if (filters.priceMax && Number(filters.priceMax) <= 0) {
-    errors.price = "Max price must be greater than zero";
+  // Area
+  if (filters.areaMax && Number(filters.areaMax) <= 0) {
+    errors.area = "Max area must be greater than zero";
   }
-
+  if (!errors.area && filters.areaMin && Number(filters.areaMin) < 0) {
+    errors.area = "Area must be greater than zero";
+  }
   if (
+    !errors.area &&
     filters.areaMin &&
     filters.areaMax &&
     Number(filters.areaMin) > Number(filters.areaMax)
   ) {
     errors.area = "Min area cannot be greater than max area";
-  }
-
-  // Validación adicional para área máxima
-  if (filters.areaMax && Number(filters.areaMax) <= 0) {
-    errors.area = "Max area must be greater than zero";
   }
 
   // City validations

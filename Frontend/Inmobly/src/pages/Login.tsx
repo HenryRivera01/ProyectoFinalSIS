@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import {
   validateLoginForm,
   getErrorMessage,
@@ -16,6 +17,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<LoginFormErrors>({});
+  const [status, setStatus] = useState<{
+    type: "idle" | "loading" | "success" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,6 +38,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    setStatus({ type: "idle", message: "" });
 
     // Validar formulario antes de enviar
     const validationErrors = validateLoginForm(formData);
@@ -43,7 +49,7 @@ const Login = () => {
     }
 
     setLoading(true);
-
+    setStatus({ type: "loading", message: "Validating credentials..." });
     try {
       const response = await fetch("http://localhost:8080/api/v1/auth/login", {
         method: "POST",
@@ -55,11 +61,12 @@ const Login = () => {
 
       if (response.ok) {
         const result = await response.json();
-        setMessage("Inicio de sesión exitoso.");
+        setMessage("Login successful.");
         // Guarda el token y el ownerId en localStorage
         localStorage.setItem("authToken", result.token);
         localStorage.setItem("ownerId", result.ownerId);
         console.log(result);
+        setStatus({ type: "success", message: "Login successful ✅" });
       } else {
         // Manejo específico de errores según el código de estado
         if (response.status === 401) {
@@ -68,6 +75,7 @@ const Login = () => {
             credentials:
               "Invalid credentials. Please check your email and password.",
           }));
+          setStatus({ type: "error", message: "Invalid credentials" });
         } else if (response.status === 400) {
           // Error de validación, puede ser email o contraseña vacíos/inválidos
           try {
@@ -88,10 +96,12 @@ const Login = () => {
           } catch {
             setMessage(getErrorMessage(400));
           }
+          setStatus({ type: "error", message: "Bad request" });
         } else {
           // Para otros códigos de error (404, 500, etc.)
           const errorMessage = getErrorMessage(response.status);
           setMessage(`Error: ${errorMessage}`);
+          setStatus({ type: "error", message: errorMessage });
 
           // Si es 404, probablemente el usuario no existe
           if (response.status === 404) {
@@ -104,9 +114,8 @@ const Login = () => {
       }
     } catch (err) {
       console.error(err);
-      setMessage(
-        "Error al conectar con el servidor. Verifique su conexión a internet."
-      );
+      setMessage("Connection error. Please check your internet connection.");
+      setStatus({ type: "error", message: "Connection error" });
     } finally {
       setLoading(false);
     }
@@ -115,44 +124,76 @@ const Login = () => {
   return (
     <main>
       <Navbar />
-      <h1>Iniciar Sesión</h1>
-      <form onSubmit={handleSubmit} aria-label="login-form">
-        <label htmlFor="email">
-          Correo electrónico:
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <span style={{ color: "red" }}>{errors.email}</span>}
-        </label>
+      <div className="auth-page">
+        <div className="auth-card">
+          <h1 className="auth-title">Login</h1>
+          <form
+            onSubmit={handleSubmit}
+            aria-label="login-form"
+            className="auth-form"
+          >
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && (
+                <span className="field-error">{errors.email}</span>
+              )}
+            </div>
 
-        <label htmlFor="password">
-          Contraseña:
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && (
-            <span style={{ color: "red" }}>{errors.password}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {errors.password && (
+                <span className="field-error">{errors.password}</span>
+              )}
+            </div>
 
-        {errors.credentials && (
-          <div style={{ color: "red" }}>{errors.credentials}</div>
-        )}
+            {errors.credentials && (
+              <div className="field-error">{errors.credentials}</div>
+            )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Ingresando..." : "Ingresar"}
-        </button>
-      </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="auth-btn primary"
+            >
+              {loading ? "Ingresando..." : "Ingresar"}
+            </button>
 
-      {message && <p>{message}</p>}
+            {status.type === "loading" && (
+              <p className="status neutral">{status.message}</p>
+            )}
+            {status.type === "success" && (
+              <p className="status success">{status.message}</p>
+            )}
+            {status.type === "error" && (
+              <p className="status error">{status.message}</p>
+            )}
+            {message && status.type === "idle" && (
+              <p className="status neutral">{message}</p>
+            )}
+
+            <p className="auth-alt-link">
+              Don't have an account? <a href="/register">Sign up</a>
+            </p>
+          </form>
+        </div>
+      </div>
+      <Footer />
     </main>
   );
 };

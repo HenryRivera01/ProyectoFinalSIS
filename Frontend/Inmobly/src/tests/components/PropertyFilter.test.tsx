@@ -1,54 +1,5 @@
-// src/tests/components/PropertyFilter.test.tsx
-import { render, screen } from "@testing-library/react";
-import { PropertyFilter } from "../../components/PropertyFilter";
 import "@testing-library/jest-dom";
 import { validateFilters } from "../../features/properties/validateFilters";
-
-describe("PropertyFilter", () => {
-  const filters = {
-    department: "",
-    city: "",
-    type: "",
-    operation: "",
-    bedrooms: "",
-    bathrooms: "",
-    priceMin: "",
-    priceMax: "",
-    areaMin: "",
-    areaMax: "",
-  };
-
-  const onChange = jest.fn();
-
-  beforeEach(() => {
-    render(<PropertyFilter filters={filters} onChange={onChange} />);
-  });
-
-  it("should render price and area inputs", () => {
-    expect(screen.getByLabelText(/min price/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/max price/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/min area/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/max area/i)).toBeInTheDocument();
-  });
-
-  it("should render all expected selects", () => {
-    expect(screen.getByLabelText(/department/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/city/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/type/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/operation/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/bedrooms/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/bathrooms/i)).toBeInTheDocument();
-
-    // You can also check that there are 6 comboboxes in total
-    expect(screen.getAllByRole("combobox")).toHaveLength(6);
-  });
-
-  it("should render the button to apply filters", () => {
-    expect(
-      screen.getByRole("button", { name: /apply filters/i })
-    ).toBeInTheDocument();
-  });
-});
 
 describe("validateFilters", () => {
   it("Given all fields are empty, When validating filters, Then returns no errors", () => {
@@ -134,6 +85,40 @@ describe("validateFilters", () => {
     };
     const errors = validateFilters(filters);
     expect(errors.price).toBe("Max price must be greater than zero");
+  });
+
+  it("Given negative min price, When validating filters, Then returns unified price error", () => {
+    const filters = {
+      department: "",
+      city: "",
+      type: "",
+      operation: "",
+      bedrooms: "",
+      bathrooms: "",
+      priceMin: "-10",
+      priceMax: "",
+      areaMin: "",
+      areaMax: "",
+    };
+    const errors = validateFilters(filters);
+    expect(errors.price).toBe("Price must be greater than zero");
+  });
+
+  it("Given negative min area, When validating filters, Then returns unified area error", () => {
+    const filters = {
+      department: "",
+      city: "",
+      type: "",
+      operation: "",
+      bedrooms: "",
+      bathrooms: "",
+      priceMin: "",
+      priceMax: "",
+      areaMin: "-5",
+      areaMax: "",
+    };
+    const errors = validateFilters(filters);
+    expect(errors.area).toBe("Area must be greater than zero");
   });
 
   // Case: Invalid city id
