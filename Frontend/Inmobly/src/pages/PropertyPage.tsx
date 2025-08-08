@@ -5,7 +5,6 @@ import type { ApiProperty } from "../features/properties/types";
 import { fetchPropertyById, fetchProperties } from "../features/properties/api";
 import { PropertyCard } from "../components/PropertyCard";
 import type { Location } from "react-router-dom";
-import { Footer } from "../components/Footer";
 
 interface PropertyLocationState {
   property?: ApiProperty;
@@ -29,35 +28,18 @@ export const PropertyPage = () => {
   const [related, setRelated] = useState<ApiProperty[]>([]);
 
   useEffect(() => {
-    // Sincroniza con el property pasado vía navigate state si cambia
-    if (
-      stateProp &&
-      (!property || property.registryNumber !== stateProp.registryNumber)
-    ) {
-      setProperty(stateProp);
-      setMainImage(stateProp.images?.[0]);
-      setCurrentIndex(0);
-      setError("");
-    }
-  }, [stateProp]); // <- nuevo efecto
-
-  useEffect(() => {
-    if (!id) return;
-    const numericId = Number(id);
-    // Si no hay property cargado o el id cambió => fetch
-    if (!property || property.registryNumber !== numericId) {
+    if (!property && id) {
       setLoading(true);
-      setError("");
       fetchPropertyById(id)
         .then((data) => {
           setProperty(data);
           setMainImage(data.images?.[0]);
           setCurrentIndex(0);
         })
-        .catch(() => setError("Failed to load property"))
+        .catch(() => setError("No se pudo cargar la propiedad"))
         .finally(() => setLoading(false));
     }
-  }, [id]); // <- reemplaza el efecto anterior
+  }, [id, property]);
 
   useEffect(() => {
     if (!property) return;
@@ -246,7 +228,6 @@ export const PropertyPage = () => {
           </section>
         )}
       </div>
-      <Footer />
     </main>
   );
 };
