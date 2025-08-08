@@ -3,6 +3,7 @@ package com.juan.property.property_recommendation.location;
 import com.juan.property.property_recommendation.location.dto.CityResponse;
 import com.juan.property.property_recommendation.location.dto.DepartmentResponse;
 import com.juan.property.property_recommendation.location.service.LocationService;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.HttpStatus;

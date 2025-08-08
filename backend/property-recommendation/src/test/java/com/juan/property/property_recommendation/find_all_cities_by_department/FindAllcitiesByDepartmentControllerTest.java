@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LocationController.class)
-public class FindAllcitiesByDepartmentController {
+public class FindAllcitiesByDepartmentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -32,8 +32,7 @@ public class FindAllcitiesByDepartmentController {
 
     @Test
     @DisplayName("GET /location/departments/{id}/cities - should return list of cities")
-    void getCitiesByDepartmentId_shouldReturnCityList() throws Exception {
-        // Arrange
+    void testFindCitiesByDepartmentId() throws Exception {
         int departmentId = 1;
 
         CityResponse city1 = CityResponse.builder().id(1).name("Bogotá").build();
@@ -43,7 +42,6 @@ public class FindAllcitiesByDepartmentController {
 
         when(locationService.findAllCitiesByDepartmentId(departmentId)).thenReturn(cityList);
 
-        // Act & Assert
         mockMvc.perform(get("/location/departments/{id}/cities", departmentId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -51,16 +49,14 @@ public class FindAllcitiesByDepartmentController {
 
     @Test
     @DisplayName("GET /location/departments/{id}/cities - should return 404 if department not found")
-    void getCitiesByInvalidDepartmentId_shouldReturn404() throws Exception {
-        // Arrange
+    void testDindCitiesByInvalidDepartmentId() throws Exception {
         int invalidDepartmentId = 999;
 
         when(locationService.findAllCitiesByDepartmentId(invalidDepartmentId))
                 .thenThrow(new EntityNotFoundException("Department not found"));
 
-        // Act & Assert
         mockMvc.perform(get("/location/departments/{id}/cities", invalidDepartmentId)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound()); // o .isNotFound() si manejas la excepción con @ControllerAdvice
+                .andExpect(status().isNotFound());
     }
 }

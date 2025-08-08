@@ -1,6 +1,5 @@
 package com.juan.property.property_recommendation.property;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.juan.property.property_recommendation.location.City;
 import com.juan.property.property_recommendation.user.User;
 import jakarta.persistence.*;

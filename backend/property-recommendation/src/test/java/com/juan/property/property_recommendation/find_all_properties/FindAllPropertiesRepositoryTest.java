@@ -16,14 +16,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import static com.juan.property.property_recommendation.property.OperationType.SELL;
 import static com.juan.property.property_recommendation.property.PropertyType.HOUSE;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-public class FindAllPropertiesRepository {
+public class FindAllPropertiesRepositoryTest {
     @Autowired
     private TestEntityManager testEntityManager;
 
@@ -74,7 +73,6 @@ public class FindAllPropertiesRepository {
     }
     @Test // nova
     public void testFindAllProperties() {
-        // Guardar datos en la BD en memoria
         User savedUser = testEntityManager.persistFlushFind(user);
         City savedCity = testEntityManager.persistFlushFind(city);
 
@@ -83,7 +81,6 @@ public class FindAllPropertiesRepository {
         PropertySpecification spec = new PropertySpecification(); // sin filtros
         List<Property> found = propertyRepository.findAll(spec);
 
-        // Verificar que se encontró al menos 1 propiedad y que es la que guardamos
         assertFalse(found.isEmpty());
         assertTrue(found.stream().anyMatch(p -> p.getId().equals(savedProperty.getId())));
 

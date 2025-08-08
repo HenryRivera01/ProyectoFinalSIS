@@ -1,11 +1,15 @@
 package com.juan.property.property_recommendation.auth.service;
 
+import com.juan.property.property_recommendation.auth.AuthMapper;
 import com.juan.property.property_recommendation.auth.SessionToken;
 import com.juan.property.property_recommendation.auth.SessionTokenRepository;
 import com.juan.property.property_recommendation.auth.dto.RegisterRequest;
+import com.juan.property.property_recommendation.auth.dto.RegisterResponse;
 import com.juan.property.property_recommendation.user.User;
 import com.juan.property.property_recommendation.auth.dto.AuthRequest;
 import com.juan.property.property_recommendation.user.UserRepository;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +24,10 @@ public class AuthService implements  IAuthService {
 
     private final UserRepository userRepository;
     private final SessionTokenRepository sessionTokenRepository;
+    private final AuthMapper authMapper;
 
     @Override
-    public void register(RegisterRequest registerRequest) {
+    public RegisterResponse register(RegisterRequest registerRequest) {
         // Validar que ningún campo requerido sea nulo o vacío
         if (registerRequest.getEmail() == null || registerRequest.getEmail().isBlank()
                 || registerRequest.getDocumentType() == null
@@ -36,12 +41,12 @@ public class AuthService implements  IAuthService {
 
         // Validar numero de documento único
         if (userRepository.findByDocumentNumber(registerRequest.getDocumentNumber()).isPresent()) {
-            throw new RuntimeException("This document number is already registered");
+            throw new EntityExistsException("This document number is already registered");
         }
 
         // Validar email único
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-            throw new RuntimeException("This email is already registered");
+            throw new EntityExistsException("This email is already registered");
         }
 
         // Validar número de documento (10 dígitos positivos)
@@ -73,6 +78,8 @@ public class AuthService implements  IAuthService {
         user.setPassword(encrypt(registerRequest.getPassword()));
 
         userRepository.save(user);
+
+        return authMapper.registerUserToDto(user);
     }
 
 
@@ -93,9 +100,9 @@ public class AuthService implements  IAuthService {
 
 
         User user = userRepository.findByEmail(authRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new EntityNotFoundException("Invalid credentials"));
         if(!user.getPassword().equals(encrypt(authRequest.getPassword()))) {
-            throw new RuntimeException("Invalid credentials");
+            throw new EntityNotFoundException("Invalid credentials");
         }
 
 

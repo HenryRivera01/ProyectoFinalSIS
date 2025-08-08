@@ -61,18 +61,7 @@ public class RegisterUserController {
                 .andExpect(status().isCreated());
     }
 
-//    @Test
-//    void testRegisterUserWithDuplicateDocumentNumber() throws Exception {
-//        String json = objectMapper.writeValueAsString(validRequest);
-//
-//        doThrow(new RuntimeException("The document number is already registered"))
-//                .when(authService).register(validRequest);
-//
-//        mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json))
-//                .andExpect(status().isInternalServerError()); // puedes mapear RuntimeException a otro status si prefieres
-//    }
+
 
     @Test
     void testRegisterUserWithInvalidEmail() throws Exception {

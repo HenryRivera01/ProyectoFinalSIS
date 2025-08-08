@@ -64,7 +64,7 @@ public class RegisterPropertyControllerTest {
     }
 
     @Test
-    void testLoginWithValidCredentials_shouldReturn200() throws Exception {
+    void testLoginWithValidCredentials() throws Exception {
         // Given
         String token = UUID.randomUUID().toString();
         when(authService.login(any(AuthRequest.class))).thenReturn(token);
@@ -80,7 +80,7 @@ public class RegisterPropertyControllerTest {
     }
 
     @Test
-    void testLoginWithBlankEmail_shouldReturn400() throws Exception {
+    void testLoginWithBlankEmail() throws Exception {
         validAuthRequest.setEmail(" ");
         String json = objectMapper.writeValueAsString(validAuthRequest);
 
@@ -92,7 +92,7 @@ public class RegisterPropertyControllerTest {
     }
 
     @Test
-    void testLoginWithInvalidEmailFormat_shouldReturn400() throws Exception {
+    void testLoginWithInvalidEmailFormat() throws Exception {
         validAuthRequest.setEmail("invalid-email");
         String json = objectMapper.writeValueAsString(validAuthRequest);
 
@@ -104,7 +104,7 @@ public class RegisterPropertyControllerTest {
     }
 
     @Test
-    void testLoginWithBlankPassword_shouldReturn400() throws Exception {
+    void testLoginWithBlankPassword() throws Exception {
         validAuthRequest.setPassword("   ");
         String json = objectMapper.writeValueAsString(validAuthRequest);
 
@@ -116,7 +116,7 @@ public class RegisterPropertyControllerTest {
     }
 
     @Test
-    void testLoginWithMissingEmail_shouldReturn400() throws Exception {
+    void testLoginWithMissingEmail() throws Exception {
         AuthRequest invalidRequest = new AuthRequest(null, "123456");
         String json = objectMapper.writeValueAsString(invalidRequest);
 
@@ -128,7 +128,7 @@ public class RegisterPropertyControllerTest {
     }
 
     @Test
-    void testLoginWithMissingPassword_shouldReturn400() throws Exception {
+    void testLoginWithMissingPassword() throws Exception {
         AuthRequest invalidRequest = new AuthRequest("juan@example.com", null);
         String json = objectMapper.writeValueAsString(invalidRequest);
 

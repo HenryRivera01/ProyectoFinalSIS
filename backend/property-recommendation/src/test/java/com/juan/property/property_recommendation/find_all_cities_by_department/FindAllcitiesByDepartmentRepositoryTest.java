@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
-public class FindAllcitiesByDepartmentRepository {
+public class FindAllcitiesByDepartmentRepositoryTest {
 
     @Autowired
     private CityRepository cityRepository;
@@ -26,9 +26,7 @@ public class FindAllcitiesByDepartmentRepository {
     private DepartmentRepository departmentRepository;
 
     @Test
-    @DisplayName("Buscar ciudades por departamento")
-    void findCitiesByDepartment() {
-        // Arrange
+    void testFindCitiesByDepartment() {
         Department d1 = Department.builder().name("Cundinamarca").build();
         Department d2 = Department.builder().name("Antioquia").build();
         departmentRepository.save(d1);
@@ -40,48 +38,36 @@ public class FindAllcitiesByDepartmentRepository {
 
         cityRepository.saveAll(List.of(c1, c2, c3));
 
-        // Act
         List<City> citiesOfD1 = cityRepository.findByDepartment(d1);
         List<City> citiesOfD2 = cityRepository.findByDepartment(d2);
 
-        // Assert
         assertThat(citiesOfD1.size()).isEqualTo(2);
 
         assertThat(citiesOfD2.size()).isEqualTo(1);
     }
 
     @Test
-    @DisplayName("Buscar ciudades por departamento null - debe lanzar excepción")
-    void findCitiesByNullDepartment_shouldThrowException() {
-        // Act & Assert
+    void testFindCitiesByNullDepartment() {
         assertThrows(IllegalArgumentException.class, () -> {
             cityRepository.findByDepartment(null);
         });
     }
 
     @Test
-    @DisplayName("Buscar ciudades por departamento con ID negativo - debe retornar lista vacía")
-    void findCitiesByDepartmentWithNegativeId_shouldReturnEmptyList() {
-        // Arrange
+    void testCitiesByDepartmentWithNegativeId() {
         Department fakeDepartment = Department.builder().id(-1).name("Falso").build();
 
-        // Act
         List<City> result = cityRepository.findByDepartment(fakeDepartment);
 
-        // Assert
         assertEquals(0, result.size());
     }
 
     @Test
-    @DisplayName("Buscar ciudades por departamento inexistente - debe retornar lista vacía")
-    void findCitiesByNonExistingDepartment_shouldReturnEmptyList() {
-        // Arrange
+    void testFindCitiesByNonExistingDepartment() {
         Department nonexistentDepartment = Department.builder().id(999).name("No existe").build();
 
-        // Act
         List<City> result = cityRepository.findByDepartment(nonexistentDepartment);
 
-        // Assert
         assertEquals(0, result.size());
     }
 }

@@ -7,6 +7,7 @@ import com.juan.property.property_recommendation.auth.service.AuthService;
 import com.juan.property.property_recommendation.user.DocumentType;
 import com.juan.property.property_recommendation.user.User;
 import com.juan.property.property_recommendation.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,7 +54,7 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginWithNullEmail_shouldThrowException() {
+    public void testLoginWithNullEmail() {
         AuthRequest request = new AuthRequest(null, "123456");
 
         Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login(request));
@@ -62,7 +63,7 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginWithEmptyEmail_shouldThrowException() {
+    public void testLoginWithEmptyEmail() {
         AuthRequest request = new AuthRequest("   ", "123456");
 
         Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login(request));
@@ -71,7 +72,7 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginWithInvalidEmailFormat_shouldThrowException() {
+    public void testLoginWithInvalidEmailFormat() {
         AuthRequest request = new AuthRequest("invalid-email", "123456");
 
         Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login(request));
@@ -80,7 +81,7 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginWithNonExistentEmail_shouldThrowException() {
+    public void testLoginWithNonExistentEmail() {
         AuthRequest request = new AuthRequest("noexiste@example.com", "123456");
 
         when(userRepository.findByEmail("noexiste@example.com")).thenReturn(Optional.empty());
@@ -91,7 +92,7 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginWithNullPassword_shouldThrowException() {
+    public void testLoginWithNullPassword() {
         AuthRequest request = new AuthRequest("juan@example.com", null);
 
         Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login(request));
@@ -100,7 +101,7 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginWithEmptyPassword_shouldThrowException() {
+    public void testLoginWithEmptyPassword() {
         AuthRequest request = new AuthRequest("juan@example.com", "   ");
 
         Exception ex = assertThrows(IllegalArgumentException.class, () -> authService.login(request));
@@ -109,18 +110,18 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void testLoginWithIncorrectPassword_shouldThrowException() {
+    public void testLoginWithIncorrectPassword() {
         AuthRequest request = new AuthRequest("juan@example.com", "wrongpassword");
 
         when(userRepository.findByEmail("juan@example.com")).thenReturn(Optional.of(user));
 
-        Exception ex = assertThrows(RuntimeException.class, () -> authService.login(request));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> authService.login(request));
 
         assertEquals("Invalid credentials", ex.getMessage());
     }
 
     @Test
-    void testLoginWithCorrectCredentials_shouldReturnToken() {
+    void testLoginWithCorrectCredentials() {
         // Arrange
         String email = "juan@example.com";
         String rawPassword = "123456";

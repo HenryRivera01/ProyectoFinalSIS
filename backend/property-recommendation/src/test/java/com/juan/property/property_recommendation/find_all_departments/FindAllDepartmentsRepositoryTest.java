@@ -12,7 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-public class FindAllDepartmentsRepository {
+public class FindAllDepartmentsRepositoryTest {
 
     @Autowired
     private DepartmentRepository departmentRepository;
@@ -20,8 +20,7 @@ public class FindAllDepartmentsRepository {
 
 
     @Test
-    @DisplayName("Buscar todos los departamentos")
-    void findAllDepartments() {
+    void testFindAllDepartments() {
         Department d1 = Department.builder().name("Cundinamarca").build();
         Department d2 = Department.builder().name("Antioquia").build();
 

@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LocationController.class)
-public class FindAllDepartmentsController {
+public class FindAllDepartmentsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,8 +32,7 @@ public class FindAllDepartmentsController {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("GET /location/departments - should return list of departments")
-    void getAllDepartments_shouldReturnList() throws Exception {
+    void testFindAllDepartments() throws Exception {
         // Arrange
         DepartmentResponse d1 = DepartmentResponse.builder().id(1).name("Cundinamarca").build();
         DepartmentResponse d2 = DepartmentResponse.builder().id(2).name("Antioquia").build();
