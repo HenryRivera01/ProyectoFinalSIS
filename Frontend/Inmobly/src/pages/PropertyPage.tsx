@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import type { ApiProperty } from "../features/properties/types";
-import { fetchPropertyById } from "../features/properties/api";
+import { fetchPropertyById, fetchProperties } from "../features/properties/api";
+import { PropertyCard } from "../components/PropertyCard";
 import type { Location } from "react-router-dom";
+import { Footer } from "../components/Footer";
 
 interface PropertyLocationState {
   property?: ApiProperty;
@@ -21,180 +23,202 @@ export const PropertyPage = () => {
   const [mainImage, setMainImage] = useState<string | undefined>(
     stateProp?.images?.[0]
   );
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(!stateProp);
   const [error, setError] = useState("");
+  const [related, setRelated] = useState<ApiProperty[]>([]);
 
   useEffect(() => {
-    if (!property && id) {
+    // Sincroniza con el property pasado vía navigate state si cambia
+    if (
+      stateProp &&
+      (!property || property.registryNumber !== stateProp.registryNumber)
+    ) {
+      setProperty(stateProp);
+      setMainImage(stateProp.images?.[0]);
+      setCurrentIndex(0);
+      setError("");
+    }
+  }, [stateProp]); // <- nuevo efecto
+
+  useEffect(() => {
+    if (!id) return;
+    const numericId = Number(id);
+    // Si no hay property cargado o el id cambió => fetch
+    if (!property || property.registryNumber !== numericId) {
       setLoading(true);
+      setError("");
       fetchPropertyById(id)
         .then((data) => {
           setProperty(data);
           setMainImage(data.images?.[0]);
+          setCurrentIndex(0);
         })
-        .catch(() => setError("No se pudo cargar la propiedad"))
+        .catch(() => setError("Failed to load property"))
         .finally(() => setLoading(false));
     }
-  }, [id, property]);
+  }, [id]); // <- reemplaza el efecto anterior
 
-  if (loading) return <p>Cargando propiedad...</p>;
+  useEffect(() => {
+    if (!property) return;
+    fetchProperties()
+      .then((all) => {
+        const rel = all
+          .filter(
+            (p) =>
+              p.propertyType === property.propertyType &&
+              p.registryNumber !== property.registryNumber
+          )
+          .slice(0, 3);
+        setRelated(rel);
+      })
+      .catch(() => setRelated([]));
+  }, [property]);
+
+  if (loading) return <p>Loading property...</p>;
   if (error) return <p>{error}</p>;
-  if (!property) return <p>Propiedad no encontrada.</p>;
+  if (!property) return <p>Property not found.</p>;
 
   const {
-    registryNumber,
     operationType,
     address,
     price,
     area,
     images = [],
     numberOfBathrooms,
-    getNumberOfBedRooms,
+    numberOfBedRooms,
     city,
     ownerEmail,
     ownerPhoneNumber,
     propertyType,
   } = property;
 
+  const totalImages = images?.length || 0;
+
+  const goPrev = () => {
+    if (!totalImages) return;
+    setCurrentIndex((i) => {
+      const ni = (i - 1 + totalImages) % totalImages;
+      setMainImage(images![ni]);
+      return ni;
+    });
+  };
+  const goNext = () => {
+    if (!totalImages) return;
+    setCurrentIndex((i) => {
+      const ni = (i + 1) % totalImages;
+      setMainImage(images![ni]);
+      return ni;
+    });
+  };
+
   return (
-    <main style={{ fontFamily: "sans-serif" }}>
+    <main>
       <Navbar />
-      <div style={{ padding: "1rem" }}>
-        <button onClick={() => navigate(-1)} style={{ marginBottom: 16 }}>
-          ← Volver
+      <div className="property-page-container">
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          ← Back
         </button>
-        <div style={{ display: "flex", gap: "2rem" }}>
-          {/* Galería */}
-          <div style={{ flex: 2 }}>
-            <div
-              style={{
-                border: "1px solid #ccc",
-                height: 360,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 8,
-                overflow: "hidden",
-              }}
-            >
+
+        <div className="property-page-layout">
+          {/* Gallery */}
+          <div className="gallery-column">
+            <div className="main-image-wrapper">
               {mainImage ? (
-                <img
-                  src={mainImage}
-                  alt="principal"
-                  style={{ maxWidth: "100%", maxHeight: "100%" }}
-                />
+                <img src={mainImage} alt="Property" className="main-image" />
               ) : (
-                <span>Sin imagen</span>
+                <span className="no-image">No image</span>
+              )}
+              {totalImages > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="nav-arrow prev"
+                    onClick={goPrev}
+                    aria-label="Previous image"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    className="nav-arrow next"
+                    onClick={goNext}
+                    aria-label="Next image"
+                  >
+                    ›
+                  </button>
+                </>
               )}
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              {images?.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setMainImage(img)}
-                  style={{
-                    border:
-                      img === mainImage
-                        ? "2px solid #004aad"
-                        : "1px solid #999",
-                    width: 72,
-                    height: 56,
-                    padding: 0,
-                    background: "#fff",
-                    cursor: "pointer",
-                  }}
-                >
-                  <img
-                    src={img}
-                    alt={`thumb-${i}`}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
+
+            {totalImages > 0 && (
+              <div className="thumbs-row">
+                {images!.map((img, i) => (
+                  <button
+                    key={i}
+                    className={`thumb-btn ${
+                      i === currentIndex ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setCurrentIndex(i);
+                      setMainImage(img);
                     }}
-                  />
-                </button>
-              ))}
-            </div>
-            <section style={{ marginTop: 32 }}>
-              <h3>Descripción</h3>
-              <p>
-                Inmobly te ayuda a encontrar el lugar ideal. (Agregar
-                descripción real cuando el backend lo soporte).
+                    aria-label={`Show image ${i + 1}`}
+                  >
+                    <img src={img} alt={`thumb-${i}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <section className="property-section">
+              <h3 className="section-heading">Description</h3>
+              <p className="section-text">
+                Placeholder description. Add real content when backend supports
+                it.
               </p>
             </section>
-            <section style={{ marginTop: 32 }}>
-              <h3>Productos relacionados</h3>
-              <p>(Placeholder para propiedades relacionadas)</p>
-            </section>
           </div>
+
           {/* Info */}
-          <aside style={{ flex: 1, minWidth: 320 }}>
-            <p style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>
-              {propertyType?.replace(/_/g, " ")}
-            </p>
-            <h2 style={{ margin: "4px 0" }}>
+          <aside className="info-column">
+            <p className="prop-type">{propertyType?.replace(/_/g, " ")}</p>
+            <h1 className="prop-title">
               {city?.name} - {address}
+            </h1>
+            <h2 className="prop-price">
+              {operationType === "LEASE" ? "Rent" : "Sale"}: $
+              {price.toLocaleString()} COP
             </h2>
-            <h3 style={{ color: "#222", marginTop: 8 }}>
-              {operationType === "LEASE" ? "Arriendo" : "Venta"}: $
-              {price.toLocaleString()}
-            </h3>
-            <hr />
-            <ul style={{ listStyle: "none", padding: 0, lineHeight: 1.6 }}>
-              <li>
-                <strong>Área:</strong> {area} sqft
+
+            <ul className="property-features">
+              <li className="feature-item area">
+                <span>{area} m²</span>
               </li>
-              <li>
-                <strong>Baños:</strong> {numberOfBathrooms}
+              <li className="feature-item baths">
+                <span>{numberOfBathrooms} baths</span>
               </li>
-              <li>
-                <strong>Habitaciones:</strong> {getNumberOfBedRooms}
-              </li>
-              <li>
-                <strong>ID Registro:</strong> {registryNumber}
-              </li>
-              <li>
-                <strong>Ciudad:</strong> {city?.name}
+              <li className="feature-item beds">
+                <span>{numberOfBedRooms} bedrooms</span>
               </li>
             </ul>
-            <hr />
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  background: "#004aad",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 600,
-                }}
-              >
+
+            <div className="contact-block">
+              <div className="avatar">
                 {(ownerEmail || "U")[0].toUpperCase()}
               </div>
-              <div style={{ fontSize: 14 }}>
-                <strong>Contacto</strong>
+              <div className="contact-data">
+                <strong>Contact</strong>
                 <div>{ownerEmail}</div>
                 <div>{ownerPhoneNumber}</div>
               </div>
             </div>
+
             <button
-              style={{
-                marginTop: 20,
-                width: "100%",
-                background: "#004aad",
-                color: "#fff",
-                border: "none",
-                padding: "10px 14px",
-                cursor: "pointer",
-                borderRadius: 4,
-              }}
+              className="primary-action"
               onClick={() =>
                 alert(
-                  `Contactar a ${ownerEmail} - ${ownerPhoneNumber} (acción a implementar)`
+                  `Contact: ${ownerEmail} - ${ownerPhoneNumber} (to implement)`
                 )
               }
             >
@@ -202,7 +226,27 @@ export const PropertyPage = () => {
             </button>
           </aside>
         </div>
+
+        {related.length > 0 && (
+          <section className="property-section">
+            <h3 className="section-heading">Related properties</h3>
+            <div className="related-grid property-grid">
+              {related.map((r) => (
+                <PropertyCard
+                  key={r.registryNumber}
+                  property={r}
+                  onClick={() =>
+                    navigate(`/property/${r.registryNumber}`, {
+                      state: { property: r },
+                    })
+                  }
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
+      <Footer />
     </main>
   );
 };

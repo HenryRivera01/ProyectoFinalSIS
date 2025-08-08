@@ -5,37 +5,73 @@ type Props = {
   onClick?: () => void;
 };
 
+function formatPropertyType(raw: string) {
+  return raw
+    .toLowerCase()
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 export const PropertyCard = ({ property, onClick }: Props) => {
   const firstImage =
     (property.images && property.images[0]) ||
-    "https://via.placeholder.com/400x260?text=Sin+Imagen";
+    "https://via.placeholder.com/600x360?text=No+Image";
+  const typeLabel = formatPropertyType(property.propertyType);
+  const isLease = property.operationType === "LEASE";
+  const deptName = (property as unknown as { department?: { name: string } })
+    ?.department?.name;
+
   return (
-    <article onClick={onClick}>
-      <figure>
+    <article className="property-card" onClick={onClick}>
+      <div className="property-image-wrapper">
+        <span className="property-type-badge">{typeLabel}</span>
         <img
+          className="property-image"
           src={firstImage}
-          alt={`Imagen de la propiedad en ${property.address}`}
+          alt={`${typeLabel} in ${property.city.name}`}
+          loading="lazy"
         />
-        <figcaption>{property.address}</figcaption>
-      </figure>
-      <section>
-        <header>
-          <p>{property.city.name}</p>
-          <h3>
-            {property.propertyType} / {property.operationType}
+      </div>
+
+      <div className="property-body">
+        <header className="property-header">
+          <h3 className="property-location">
+            {property.city.name}
+            {deptName ? ` - ${deptName}` : ""}
           </h3>
+          <p className="property-address">{property.address}</p>
         </header>
-        <address>{property.address}</address>
-        <ul>
-          <li>{property.getNumberOfBedRooms} Bedrooms</li>
-          <li>{property.numberOfBathrooms} Bathrooms</li>
-          <li>{property.area} m²</li>
+
+        <ul className="property-features">
+          <li className="feature-item area">
+            <span className="feature-label">{property.area} m²</span>
+          </li>
+          <li className="feature-item baths">
+            <span className="feature-label">
+              {property.numberOfBathrooms} baths
+            </span>
+          </li>
+          <li className="feature-item beds">
+            <span className="feature-label">
+              {property.numberOfBedRooms} bedrooms
+            </span>
+          </li>
         </ul>
-        <footer>
-          <strong>${property.price.toLocaleString()}</strong>
-        </footer>
-      </section>
+
+        <div className="property-price-row">
+          <strong className="property-price">
+            ${property.price.toLocaleString()} COP
+          </strong>
+        </div>
+
+        <button
+          type="button"
+          className={`property-cta ${isLease ? "lease" : "buy"}`}
+        >
+          {isLease ? "Rent now" : "Buy now"}
+        </button>
+      </div>
     </article>
   );
 };
-    

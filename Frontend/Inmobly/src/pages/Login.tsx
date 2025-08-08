@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import {
   validateLoginForm,
   getErrorMessage,
@@ -123,54 +124,76 @@ const Login = () => {
   return (
     <main>
       <Navbar />
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit} aria-label="login-form">
-        <label htmlFor="email">
-          Email:
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <span style={{ color: "red" }}>{errors.email}</span>}
-        </label>
+      <div className="auth-page">
+        <div className="auth-card">
+          <h1 className="auth-title">Login</h1>
+          <form
+            onSubmit={handleSubmit}
+            aria-label="login-form"
+            className="auth-form"
+          >
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && (
+                <span className="field-error">{errors.email}</span>
+              )}
+            </div>
 
-        <label htmlFor="password">
-          Password:
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && (
-            <span style={{ color: "red" }}>{errors.password}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {errors.password && (
+                <span className="field-error">{errors.password}</span>
+              )}
+            </div>
 
-        {errors.credentials && (
-          <div style={{ color: "red" }}>{errors.credentials}</div>
-        )}
+            {errors.credentials && (
+              <div className="field-error">{errors.credentials}</div>
+            )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Ingresando..." : "Ingresar"}
-        </button>
-      </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="auth-btn primary"
+            >
+              {loading ? "Ingresando..." : "Ingresar"}
+            </button>
 
-      {/* Indicadores de estado */}
-      {status.type === "loading" && (
-        <p style={{ color: "#555" }}>{status.message}</p>
-      )}
-      {status.type === "success" && (
-        <p style={{ color: "green" }}>{status.message}</p>
-      )}
-      {status.type === "error" && (
-        <p style={{ color: "red" }}>{status.message}</p>
-      )}
-      {message && status.type === "idle" && <p>{message}</p>}
+            {status.type === "loading" && (
+              <p className="status neutral">{status.message}</p>
+            )}
+            {status.type === "success" && (
+              <p className="status success">{status.message}</p>
+            )}
+            {status.type === "error" && (
+              <p className="status error">{status.message}</p>
+            )}
+            {message && status.type === "idle" && (
+              <p className="status neutral">{message}</p>
+            )}
+
+            <p className="auth-alt-link">
+              Don't have an account? <a href="/register">Sign up</a>
+            </p>
+          </form>
+        </div>
+      </div>
+      <Footer />
     </main>
   );
 };

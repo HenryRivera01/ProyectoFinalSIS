@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
 import {
   validateRegisterForm,
   type RegisterFormData,
@@ -143,129 +144,156 @@ export default function Register() {
   return (
     <main>
       <Navbar />
-      <h1>User Registration</h1>
-      <form onSubmit={handleSubmit} aria-label="register-form">
-        <label>
-          Document type:
-          <select
-            name="documentType"
-            value={formData.documentType}
-            onChange={handleChange}
+      <div className="auth-page">
+        <div className="auth-card">
+          <h1 className="auth-title">Signup</h1>
+          <form
+            onSubmit={handleSubmit}
+            aria-label="register-form"
+            className="auth-form"
           >
-            <option value="CC">CC</option>
-            <option value="CE">CE</option>
-          </select>
-          {errors.documentType && (
-            <span style={{ color: "red" }}>{errors.documentType}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <select
+                name="documentType"
+                value={formData.documentType}
+                onChange={handleChange}
+                className="auth-input"
+              >
+                <option value="CC">CC</option>
+                <option value="CE">CE</option>
+              </select>
+              {errors.documentType && (
+                <span className="field-error">{errors.documentType}</span>
+              )}
+            </div>
 
-        <label>
-          Document number:
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            name="documentNumber"
-            value={formData.documentNumber}
-            onChange={handleChange}
-            required
-          />
-          {errors.documentNumber && (
-            <span style={{ color: "red" }}>{errors.documentNumber}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                name="documentNumber"
+                placeholder="Document number"
+                value={formData.documentNumber}
+                onChange={handleChange}
+                required
+              />
+              {errors.documentNumber && (
+                <span className="field-error">{errors.documentNumber}</span>
+              )}
+            </div>
 
-        <label>
-          First name:
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
-          {errors.firstName && (
-            <span style={{ color: "red" }}>{errors.firstName}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="text"
+                name="firstName"
+                placeholder="First name"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+              />
+              {errors.firstName && (
+                <span className="field-error">{errors.firstName}</span>
+              )}
+            </div>
 
-        <label>
-          Last name:
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-          {errors.lastName && (
-            <span style={{ color: "red" }}>{errors.lastName}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="text"
+                name="lastName"
+                placeholder="Last name"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+              />
+              {errors.lastName && (
+                <span className="field-error">{errors.lastName}</span>
+              )}
+            </div>
 
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          {errors.email && <span style={{ color: "red" }}>{errors.email}</span>}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && (
+                <span className="field-error">{errors.email}</span>
+              )}
+            </div>
 
-        <label>
-          Password:
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          {errors.password && (
-            <span style={{ color: "red" }}>{errors.password}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              {errors.password && (
+                <span className="field-error">{errors.password}</span>
+              )}
+            </div>
 
-        <label>
-          Phone number:
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
-          />
-          {errors.phoneNumber && (
-            <span style={{ color: "red" }}>{errors.phoneNumber}</span>
-          )}
-        </label>
+            <div className="form-field">
+              <input
+                className="auth-input"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                name="phoneNumber"
+                placeholder="Phone number"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                required
+              />
+              {errors.phoneNumber && (
+                <span className="field-error">{errors.phoneNumber}</span>
+              )}
+            </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
-        </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="auth-btn primary"
+            >
+              {loading ? "Registering..." : "Register"}
+            </button>
 
-        {/* Mensajes de estado unificados */}
-        {status.type === "loading" && (
-          <p style={{ color: "#555" }}>{status.message}</p>
-        )}
-        {status.type === "success" && (
-          <p style={{ color: "green" }}>{status.message}</p>
-        )}
-        {status.type === "error" && (
-          <p style={{ color: "red" }}>{status.message}</p>
-        )}
-        {/* Conserva retrocompatibilidad */}
-        {error && status.type !== "error" && <p role="alert">Error: {error}</p>}
-        {success && status.type !== "success" && (
-          <p>Registration successful ✅</p>
-        )}
-      </form>
+            {status.type === "loading" && (
+              <p className="status neutral">{status.message}</p>
+            )}
+            {status.type === "success" && (
+              <p className="status success">{status.message}</p>
+            )}
+            {status.type === "error" && (
+              <p className="status error">{status.message}</p>
+            )}
+            {error && status.type !== "error" && (
+              <p role="alert" className="status error">
+                Error: {error}
+              </p>
+            )}
+            {success && status.type !== "success" && (
+              <p className="status success">Registration successful ✅</p>
+            )}
+
+            <p className="auth-alt-link">
+              Already have an account? <a href="/login">Sign in</a>
+            </p>
+          </form>
+        </div>
+      </div>
+      <Footer />
     </main>
   );
 }

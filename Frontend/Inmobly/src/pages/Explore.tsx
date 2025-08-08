@@ -1,10 +1,11 @@
 import { Navbar } from "../components/Navbar";
 import { PropertyFilter } from "../components/PropertyFilter";
 import { PropertyCard } from "../components/PropertyCard";
+import { Footer } from "../components/Footer";
 import { useState, useEffect } from "react";
 import type { ApiProperty } from "../features/properties/types";
 import { fetchProperties } from "../features/properties/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const initialFilters = {
   department: "",
@@ -20,7 +21,13 @@ const initialFilters = {
 };
 
 export const Explore = () => {
-  const [filters, setFilters] = useState(initialFilters);
+  const [searchParams] = useSearchParams();
+  const opParam = searchParams.get("operation");
+  const opValue = opParam === "BUY" || opParam === "LEASE" ? opParam : "";
+  const [filters, setFilters] = useState({
+    ...initialFilters,
+    operation: opValue,
+  });
   const [properties, setProperties] = useState<ApiProperty[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<ApiProperty[]>(
     []
@@ -74,7 +81,7 @@ export const Explore = () => {
           (!filters.type || p.propertyType === filters.type) &&
           (!filters.operation || p.operationType === filters.operation) &&
           (!filters.bedrooms ||
-            p.getNumberOfBedRooms >= parseInt(filters.bedrooms)) &&
+            p.numberOfBedRooms >= parseInt(filters.bedrooms)) &&
           (!filters.bathrooms ||
             p.numberOfBathrooms >= parseInt(filters.bathrooms)) &&
           (!filters.priceMin || p.price >= parseInt(filters.priceMin)) &&
@@ -106,47 +113,53 @@ export const Explore = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (opValue && opValue !== filters.operation) {
+      setFilters((f) => ({ ...f, operation: opValue }));
+    }
+  }, [opValue]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <main>
       <Navbar />
-      <h1>Explore Properties</h1>
-      <section>
-        <PropertyFilter filters={filters} onChange={setFilters} />
-        <div>
-          <button
-            onClick={() => {
-              setFilters({ ...initialFilters });
-            }}
-          >
-            Clear filters
-          </button>
-        </div>
-        {infoMessage && (
-          <p style={{ marginTop: 4, fontStyle: "italic", color: "#555" }}>
-            {infoMessage}
+      <div className="explore-container">
+        <header className="explore-header">
+          <h1>Explore properties</h1>
+          <p className="explore-tagline">
+            Find the property of your dreams. Filter and discover your next
+            home.
           </p>
-        )}
-      </section>
+        </header>
+        <section className="explore-filters">
+          <PropertyFilter filters={filters} onChange={setFilters} />
+          {infoMessage && (
+            <p style={{ marginTop: 6 }} className="results-info">
+              {infoMessage}
+            </p>
+          )}
+        </section>
 
-      <section>
-        {loading ? (
-          <p>Loading properties...</p>
-        ) : filteredProperties.length > 0 ? (
-          filteredProperties.map((p) => (
-            <PropertyCard
-              key={p.registryNumber}
-              property={p}
-              onClick={() =>
-                navigate(`/property/${p.registryNumber}`, {
-                  state: { property: p },
-                })
-              }
-            />
-          ))
-        ) : (
-          <p>No properties found matching the filters.</p>
-        )}
-      </section>
+        <section className="property-grid">
+          {loading ? (
+            <p>Loading properties...</p>
+          ) : filteredProperties.length > 0 ? (
+            filteredProperties.map((p) => (
+              <PropertyCard
+                key={p.registryNumber}
+                property={p}
+                onClick={() =>
+                  navigate(`/property/${p.registryNumber}`, {
+                    state: { property: p },
+                  })
+                }
+              />
+            ))
+          ) : (
+            <p>No properties found matching the filters.</p>
+          )}
+        </section>
+      </div>
+      <Footer />
     </main>
   );
 };

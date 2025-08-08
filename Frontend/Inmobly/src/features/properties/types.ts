@@ -7,7 +7,7 @@ export type ApiProperty = {
   area: number;
   images: string[] | null;  
   numberOfBathrooms: number;
-  getNumberOfBedRooms: number;
+  numberOfBedRooms: number;
   city: { id: number; name: string };
   ownerEmail: string;
   ownerPhoneNumber: number;
