@@ -21,6 +21,10 @@ export default function Register() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<RegisterFormErrors>({});
+  const [status, setStatus] = useState<{
+    type: "idle" | "loading" | "success" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -49,6 +53,7 @@ export default function Register() {
     }
 
     setLoading(true);
+    setStatus({ type: "loading", message: "Processing registration..." });
     setError(null);
     setSuccess(false);
 
@@ -95,18 +100,26 @@ export default function Register() {
             ...prev,
             documentNumber: "Document number already exists",
           }));
+          setStatus({
+            type: "error",
+            message: "Document number already exists",
+          });
           setLoading(false);
           return;
         }
 
-        setError(
-          `Error: ${response.status} - ${responseData.message || responseText}`
-        );
+        setStatus({
+          type: "error",
+          message: `Error: ${response.status} - ${
+            responseData.message || responseText
+          }`,
+        });
         setLoading(false);
         return;
       }
 
       setSuccess(true);
+      setStatus({ type: "success", message: "Registration successful ✅" });
       setFormData({
         documentType: "CC",
         documentNumber: "",
@@ -118,7 +131,10 @@ export default function Register() {
       });
     } catch (err) {
       console.error("Error completo:", err);
-      setError((err as Error).message);
+      setStatus({
+        type: "error",
+        message: "Unexpected error: " + (err as Error).message,
+      });
     } finally {
       setLoading(false);
     }
@@ -234,8 +250,21 @@ export default function Register() {
           {loading ? "Registering..." : "Register"}
         </button>
 
-        {error && <p role="alert">Error: {error}</p>}
-        {success && <p>Registration successful ✅</p>}
+        {/* Mensajes de estado unificados */}
+        {status.type === "loading" && (
+          <p style={{ color: "#555" }}>{status.message}</p>
+        )}
+        {status.type === "success" && (
+          <p style={{ color: "green" }}>{status.message}</p>
+        )}
+        {status.type === "error" && (
+          <p style={{ color: "red" }}>{status.message}</p>
+        )}
+        {/* Conserva retrocompatibilidad */}
+        {error && status.type !== "error" && <p role="alert">Error: {error}</p>}
+        {success && status.type !== "success" && (
+          <p>Registration successful ✅</p>
+        )}
       </form>
     </main>
   );

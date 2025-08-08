@@ -28,6 +28,10 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
   const { departments } = useDepartments();
   const { cities } = useCitiesByDepartment(localFilters.department);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState<{
+    type: "idle" | "applying" | "applied" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
 
   useEffect(() => {
     setLocalFilters(filters);
@@ -46,10 +50,17 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setStatus({ type: "applying", message: "Applying filters..." });
     const validationErrors = validateFilters(localFilters);
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
       onChange(localFilters);
+      setStatus({ type: "applied", message: "Filters applied" });
+    } else {
+      setStatus({
+        type: "error",
+        message: "Fix errors before applying",
+      });
     }
   };
 
@@ -200,6 +211,15 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
         {errors.area && <span style={{ color: "red" }}>{errors.area}</span>}
       </fieldset>
       <button type="submit">Apply Filters</button>
+      {status.type === "applying" && (
+        <p style={{ color: "#555" }}>{status.message}</p>
+      )}
+      {status.type === "applied" && (
+        <p style={{ color: "green" }}>{status.message}</p>
+      )}
+      {status.type === "error" && (
+        <p style={{ color: "red" }}>{status.message}</p>
+      )}
     </form>
   );
 };

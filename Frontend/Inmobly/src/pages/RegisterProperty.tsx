@@ -26,6 +26,12 @@ export const RegisterProperty = () => {
   });
 
   const [errors, setErrors] = useState<PropertyFormErrors>({});
+  // Nuevo: estados para feedback de envío
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "idle" | "success" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
   const [departments, setDepartments] = useState<Department[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [department, setDepartment] = useState<Department | null>(null);
@@ -90,26 +96,23 @@ export const RegisterProperty = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Reset feedback
+    setSubmitStatus({ type: "idle", message: "" });
 
-    // Get token from localStorage
     const token = localStorage.getItem("authToken");
-
-    // Validate form
     const validationErrors = validatePropertyForm(formData, token);
     setErrors(validationErrors);
 
-    // If there are errors, return early
     if (Object.keys(validationErrors).length > 0) {
-      // Display first error message
-      const firstError = Object.values(validationErrors)[0];
-      alert(firstError);
+      const firstError = Object.values(validationErrors)[0] as string;
+      setSubmitStatus({ type: "error", message: firstError });
       return;
     }
 
+    setSubmitting(true);
     try {
       const imageUrls = await uploadImagesToCloudinary(formData.images);
       const registryNumber = generateRegistryNumber();
-
       const payload = {
         registryNumber,
         operationType: formData.operationType,
@@ -134,31 +137,39 @@ export const RegisterProperty = () => {
       });
 
       if (!res.ok) {
-        let errorMsg = "Error al registrar la propiedad";
+        let errorMsg = "Error registering property";
         try {
           const error = await res.json();
           errorMsg = error.message || JSON.stringify(error);
-          console.error("Respuesta error backend:", error);
+          console.error("Backend error response:", error);
         } catch {
           const text = await res.text();
           errorMsg = text;
-          console.error("Respuesta error backend (texto):", text);
+          console.error("Backend error response (text):", text);
         }
-        alert("Error: " + errorMsg);
-        throw new Error(errorMsg);
+        setSubmitStatus({ type: "error", message: errorMsg });
+        return;
       }
 
-      alert("Propiedad registrada con éxito");
-      console.log(await res.json());
+      setSubmitStatus({
+        type: "success",
+        message: "Property registered successfully",
+      });
     } catch (err) {
       console.error("Error:", err);
-      alert("Error al registrar la propiedad: " + (err as Error).message);
+      setSubmitStatus({
+        type: "error",
+        message: "Error al registrar la propiedad: " + (err as Error).message,
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <main>
       <Navbar />
+      <h1>Register Properties</h1>
       <form onSubmit={handleSubmit}>
         <input
           name="price"
@@ -176,7 +187,7 @@ export const RegisterProperty = () => {
           className={errors.operationType ? "error" : ""}
         >
           <option value="">Operation type</option>
-          <option value="BUY">Buy</option>
+          <option value="BUY">Sell</option>
           <option value="LEASE">Lease</option>
         </select>
         {errors.operationType && (
@@ -308,7 +319,22 @@ export const RegisterProperty = () => {
           </div>
         )}
 
-        <button type="submit">Register property</button>
+        <button type="submit" disabled={submitting}>
+          {submitting ? "Registering..." : "Register property"}
+        </button>
+
+        {/* Mensajes de estado */}
+        {submitting && (
+          <p style={{ color: "#555", marginTop: 8 }}>
+            Processing registration...
+          </p>
+        )}
+        {submitStatus.type === "success" && (
+          <p style={{ color: "green", marginTop: 8 }}>{submitStatus.message}</p>
+        )}
+        {submitStatus.type === "error" && (
+          <p style={{ color: "red", marginTop: 8 }}>{submitStatus.message}</p>
+        )}
       </form>
     </main>
   );

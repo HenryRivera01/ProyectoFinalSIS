@@ -1,39 +1,36 @@
-import type { Property } from "../features/properties/types";
+import type { ApiProperty } from "../features/properties/types";
 
 type Props = {
-  property: Property;
+  property: ApiProperty;
   onClick?: () => void;
 };
 
 export const PropertyCard = ({ property, onClick }: Props) => {
+  const firstImage =
+    (property.images && property.images[0]) ||
+    "https://via.placeholder.com/400x260?text=Sin+Imagen";
   return (
     <article onClick={onClick}>
       <figure>
         <img
-          src={property.pictures[0]}
+          src={firstImage}
           alt={`Imagen de la propiedad en ${property.address}`}
         />
         <figcaption>{property.address}</figcaption>
       </figure>
-
       <section>
         <header>
-          <p>
-            {property.city.name}
-          </p>
+          <p>{property.city.name}</p>
           <h3>
-            {property.type} on {property.operation}
+            {property.propertyType} / {property.operationType}
           </h3>
         </header>
-
         <address>{property.address}</address>
-
         <ul>
-          <li>{property.bedrooms} Bedrooms</li>
-          <li>{property.bathrooms} Bathrooms</li>
+          <li>{property.getNumberOfBedRooms} Bedrooms</li>
+          <li>{property.numberOfBathrooms} Bathrooms</li>
           <li>{property.area} m²</li>
         </ul>
-
         <footer>
           <strong>${property.price.toLocaleString()}</strong>
         </footer>
@@ -41,3 +38,4 @@ export const PropertyCard = ({ property, onClick }: Props) => {
     </article>
   );
 };
+    

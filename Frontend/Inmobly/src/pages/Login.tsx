@@ -16,6 +16,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<LoginFormErrors>({});
+  const [status, setStatus] = useState<{
+    type: "idle" | "loading" | "success" | "error";
+    message: string;
+  }>({ type: "idle", message: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,6 +37,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    setStatus({ type: "idle", message: "" });
 
     // Validar formulario antes de enviar
     const validationErrors = validateLoginForm(formData);
@@ -43,7 +48,7 @@ const Login = () => {
     }
 
     setLoading(true);
-
+    setStatus({ type: "loading", message: "Validating credentials..." });
     try {
       const response = await fetch("http://localhost:8080/api/v1/auth/login", {
         method: "POST",
@@ -55,11 +60,12 @@ const Login = () => {
 
       if (response.ok) {
         const result = await response.json();
-        setMessage("Inicio de sesión exitoso.");
+        setMessage("Login successful.");
         // Guarda el token y el ownerId en localStorage
         localStorage.setItem("authToken", result.token);
         localStorage.setItem("ownerId", result.ownerId);
         console.log(result);
+        setStatus({ type: "success", message: "Login successful ✅" });
       } else {
         // Manejo específico de errores según el código de estado
         if (response.status === 401) {
@@ -68,6 +74,7 @@ const Login = () => {
             credentials:
               "Invalid credentials. Please check your email and password.",
           }));
+          setStatus({ type: "error", message: "Invalid credentials" });
         } else if (response.status === 400) {
           // Error de validación, puede ser email o contraseña vacíos/inválidos
           try {
@@ -88,10 +95,12 @@ const Login = () => {
           } catch {
             setMessage(getErrorMessage(400));
           }
+          setStatus({ type: "error", message: "Bad request" });
         } else {
           // Para otros códigos de error (404, 500, etc.)
           const errorMessage = getErrorMessage(response.status);
           setMessage(`Error: ${errorMessage}`);
+          setStatus({ type: "error", message: errorMessage });
 
           // Si es 404, probablemente el usuario no existe
           if (response.status === 404) {
@@ -104,9 +113,8 @@ const Login = () => {
       }
     } catch (err) {
       console.error(err);
-      setMessage(
-        "Error al conectar con el servidor. Verifique su conexión a internet."
-      );
+      setMessage("Connection error. Please check your internet connection.");
+      setStatus({ type: "error", message: "Connection error" });
     } finally {
       setLoading(false);
     }
@@ -115,10 +123,10 @@ const Login = () => {
   return (
     <main>
       <Navbar />
-      <h1>Iniciar Sesión</h1>
+      <h1>Login</h1>
       <form onSubmit={handleSubmit} aria-label="login-form">
         <label htmlFor="email">
-          Correo electrónico:
+          Email:
           <input
             type="email"
             id="email"
@@ -130,7 +138,7 @@ const Login = () => {
         </label>
 
         <label htmlFor="password">
-          Contraseña:
+          Password:
           <input
             type="password"
             id="password"
@@ -152,7 +160,17 @@ const Login = () => {
         </button>
       </form>
 
-      {message && <p>{message}</p>}
+      {/* Indicadores de estado */}
+      {status.type === "loading" && (
+        <p style={{ color: "#555" }}>{status.message}</p>
+      )}
+      {status.type === "success" && (
+        <p style={{ color: "green" }}>{status.message}</p>
+      )}
+      {status.type === "error" && (
+        <p style={{ color: "red" }}>{status.message}</p>
+      )}
+      {message && status.type === "idle" && <p>{message}</p>}
     </main>
   );
 };

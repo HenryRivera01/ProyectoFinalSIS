@@ -3,6 +3,8 @@ import { PropertyFilter } from "../components/PropertyFilter";
 import { PropertyCard } from "../components/PropertyCard";
 import { useState, useEffect } from "react";
 import type { ApiProperty } from "../features/properties/types";
+import { fetchProperties } from "../features/properties/api";
+import { useNavigate } from "react-router-dom";
 
 const initialFilters = {
   department: "",
@@ -24,11 +26,12 @@ export const Explore = () => {
     []
   );
   const [loading, setLoading] = useState(true);
+  const [infoMessage, setInfoMessage] = useState("");
 
+  // Carga inicial (todas las propiedades)
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:8080/api/v1/properties")
-      .then((res) => res.json())
+    fetchProperties()
       .then((data) => setProperties(data))
       .catch((err) => {
         console.error("Error cargando propiedades", err);
@@ -37,11 +40,37 @@ export const Explore = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  // Refetch cuando cambia department o city
+  useEffect(() => {
+    // Si no hay department y no hay city => cargar todo (reset)
+    if (!filters.department && !filters.city) {
+      setLoading(true);
+      fetchProperties()
+        .then((data) => setProperties(data))
+        .catch(() => setProperties([]))
+        .finally(() => setLoading(false));
+      return;
+    }
+
+    // Si hay department (y opcionalmente city) => pedir al backend con filtros server-side
+    setLoading(true);
+    fetchProperties({
+      departmentId: filters.department || undefined,
+      cityId: filters.city || undefined,
+    })
+      .then((data) => setProperties(data))
+      .catch((err) => {
+        console.error("Error filtrando por department/city", err);
+        setProperties([]);
+      })
+      .finally(() => setLoading(false));
+  }, [filters.department, filters.city]);
+
+  // Filtrado adicional en cliente (resto de filtros)
   useEffect(() => {
     setFilteredProperties(
       properties.filter((p) => {
         return (
-          (!filters.city || String(p.city?.id) === filters.city) &&
           (!filters.type || p.propertyType === filters.type) &&
           (!filters.operation || p.operationType === filters.operation) &&
           (!filters.bedrooms ||
@@ -55,52 +84,65 @@ export const Explore = () => {
         );
       })
     );
-  }, [filters, properties]);
+  }, [
+    filters.type,
+    filters.operation,
+    filters.bedrooms,
+    filters.bathrooms,
+    filters.priceMin,
+    filters.priceMax,
+    filters.areaMin,
+    filters.areaMax,
+    properties,
+  ]);
+
+  useEffect(() => {
+    if (loading) {
+      setInfoMessage("Loading properties...");
+    } else {
+      setInfoMessage(`${filteredProperties.length} properties found`);
+    }
+  }, [loading, filteredProperties]);
+
+  const navigate = useNavigate();
 
   return (
     <main>
       <Navbar />
       <h1>Explore Properties</h1>
-
       <section>
         <PropertyFilter filters={filters} onChange={setFilters} />
         <div>
-          <button onClick={() => setFilters({ ...initialFilters })}>
+          <button
+            onClick={() => {
+              setFilters({ ...initialFilters });
+            }}
+          >
             Clear filters
           </button>
         </div>
+        {infoMessage && (
+          <p style={{ marginTop: 4, fontStyle: "italic", color: "#555" }}>
+            {infoMessage}
+          </p>
+        )}
       </section>
 
       <section>
         {loading ? (
           <p>Loading properties...</p>
         ) : filteredProperties.length > 0 ? (
-          filteredProperties.map((p) => {
-            const property = {
-              id: p.registryNumber,
-              department: { id: 0, name: "" },
-              city: p.city,
-              address: p.address,
-              neighborhood: "",
-              type: p.propertyType,
-              bedrooms: p.getNumberOfBedRooms, 
-              bathrooms: p.numberOfBathrooms,
-              operation: p.operationType,
-              price: p.price,
-              area: p.area,
-              description: "",
-              pictures: p.images ?? [],
-            };
-            return (
-              <PropertyCard
-                key={p.registryNumber}
-                property={property}
-                onClick={() =>
-                  console.log("Property clicked:", p.registryNumber)
-                }
-              />
-            );
-          })
+          filteredProperties.map((p) => (
+            <PropertyCard
+              key={p.registryNumber}
+              property={p}
+              onClick={() =>
+                navigate(`/property/${p.registryNumber}`, {
+                  state: { property: p },
+                })
+              }
+            />
+          ))
         ) : (
           <p>No properties found matching the filters.</p>
         )}
@@ -108,4 +150,3 @@ export const Explore = () => {
     </main>
   );
 };
-
