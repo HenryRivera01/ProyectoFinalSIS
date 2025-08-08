@@ -1,3 +1,4 @@
+/** Property registration page: validates inputs and uploads images to Cloudinary. */
 import { useEffect, useState, useRef } from "react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
@@ -18,6 +19,7 @@ import {
 } from "../features/properties/moneyFormat";
 
 export const RegisterProperty = () => {
+  /** Controlled form state for new property. */
   const [formData, setFormData] = useState<PropertyFormData>({
     price: "",
     operationType: "",
@@ -29,23 +31,31 @@ export const RegisterProperty = () => {
     bathrooms: "",
     images: [],
   });
+  /** Validation errors keyed by field name. */
   const [errors, setErrors] = useState<PropertyFormErrors>({});
+  /** Submission (network) in-progress flag. */
   const [submitting, setSubmitting] = useState(false);
+  /** User feedback status after submit attempt. */
   const [submitStatus, setSubmitStatus] = useState<{
     type: "idle" | "success" | "error";
     message: string;
   }>({ type: "idle", message: "" });
+  /** Departments loaded from API. */
   const [departments, setDepartments] = useState<Department[]>([]);
+  /** Cities loaded based on selected department. */
   const [cities, setCities] = useState<City[]>([]);
+  /** Selected department entity (to trigger city reload). */
   const [department, setDepartment] = useState<Department | null>(null);
 
   useEffect(() => {
+    /** Load departments on first render. */
     fetchDepartments()
       .then(setDepartments)
       .catch((err) => console.error("Error loading departments", err));
   }, []);
 
   useEffect(() => {
+    /** Load cities whenever department changes (or clear if none). */
     if (department) {
       fetchCitiesByDepartment(department.id)
         .then(setCities)
@@ -55,6 +65,7 @@ export const RegisterProperty = () => {
     }
   }, [department]);
 
+  /** Handles generic input changes, including stripping formatting for price. */
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -69,6 +80,7 @@ export const RegisterProperty = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  /** Adds newly selected files (images) to form state. */
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -79,9 +91,10 @@ export const RegisterProperty = () => {
     }
   };
 
-  // NUEVO: soporte drag & drop y eliminar
+  /** Hidden file input reference (triggered by custom uploader UI). */
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  /** Handles drag-and-drop of image files. */
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files).filter((f) =>
@@ -92,6 +105,7 @@ export const RegisterProperty = () => {
     }
   };
 
+  /** Removes an image by its index. */
   const removeImage = (index: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -99,6 +113,7 @@ export const RegisterProperty = () => {
     }));
   };
 
+  /** Uploads images sequentially to Cloudinary and returns their URLs. */
   const uploadImagesToCloudinary = async (
     images: File[]
   ): Promise<string[]> => {
@@ -122,6 +137,7 @@ export const RegisterProperty = () => {
     return urls;
   };
 
+  /** Full submit handler: validate -> upload images -> POST payload -> feedback. */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: "idle", message: "" });

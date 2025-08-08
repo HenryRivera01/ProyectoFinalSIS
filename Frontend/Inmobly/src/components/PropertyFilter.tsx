@@ -1,10 +1,14 @@
+/** Interactive filter bar allowing users to refine property searches. */
 import React, { useState, useEffect, useRef } from "react";
 import {
   useDepartments,
   useCitiesByDepartment,
 } from "../features/properties/hooks";
 import { validateFilters } from "../features/properties/validateFilters";
-import { formatMoneyDigits, stripMoneyFormatting } from "../features/properties/moneyFormat";
+import {
+  formatMoneyDigits,
+  stripMoneyFormatting,
+} from "../features/properties/moneyFormat";
 
 type FilterValues = {
   department: string;
@@ -25,16 +29,24 @@ type Props = {
 };
 
 export const PropertyFilter = ({ filters, onChange }: Props) => {
+  /** Local editable copy (not applied until user submits or applies range). */
   const [localFilters, setLocalFilters] = useState(filters);
+  /** Departments fetched via hook. */
   const { departments } = useDepartments();
+  /** Cities for the currently selected department. */
   const { cities } = useCitiesByDepartment(localFilters.department);
+  /** Validation errors for fields / ranges. */
   const [errors, setErrors] = useState<Record<string, string>>({});
+  /** Status feedback (applying, applied, error). */
   const [status, setStatus] = useState<{
     type: "idle" | "applying" | "applied" | "error";
     message: string;
   }>({ type: "idle", message: "" });
+  /** Controls visibility of price popover. */
   const [showPrice, setShowPrice] = useState(false);
+  /** Controls visibility of area popover. */
   const [showArea, setShowArea] = useState(false);
+  /** Mobile-only filter panel toggle. */
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const filterBarRef = useRef<HTMLDivElement | null>(null);
   const priceBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -45,6 +57,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
   const [areaLeft, setAreaLeft] = useState(0);
 
   useEffect(() => {
+    /** Sync local state when parent filter set changes (external reset). */
     setLocalFilters(filters);
   }, [filters]);
 
@@ -65,6 +78,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     return () => window.removeEventListener("mousedown", handler);
   }, [showPrice, showArea]);
 
+  /** Handles dropdown / input changes and resets city if department changes. */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -76,6 +90,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     }));
   };
 
+  /** Validates and applies all filters. */
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus({ type: "applying", message: "Applying filters..." });
@@ -92,6 +107,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     }
   };
 
+  /** Toggles price popover and calculates dynamic left offset. */
   const togglePrice = () => {
     setShowArea(false);
     setShowPrice((p) => {
@@ -104,6 +120,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
       return next;
     });
   };
+  /** Toggles area popover and calculates dynamic left offset. */
   const toggleArea = () => {
     setShowPrice(false);
     setShowArea((p) => {
@@ -116,7 +133,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
       return next;
     });
   };
-
+  /** Applies only the price range after validation. */
   const applyPriceRange = () => {
     const vErrors = validateFilters(localFilters);
     setErrors(vErrors);
@@ -129,6 +146,7 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     }
   };
 
+  /** Applies only the area range after validation. */
   const applyAreaRange = () => {
     const vErrors = validateFilters(localFilters);
     setErrors(vErrors);
@@ -141,10 +159,11 @@ export const PropertyFilter = ({ filters, onChange }: Props) => {
     }
   };
 
+  /** Formats and stores only digit characters for money inputs. */
   const handleMoneyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const digits = stripMoneyFormatting(value);
-    setLocalFilters(prev => ({ ...prev, [name]: digits }));
+    setLocalFilters((prev) => ({ ...prev, [name]: digits }));
   };
 
   return (

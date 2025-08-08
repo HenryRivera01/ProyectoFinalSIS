@@ -1,6 +1,8 @@
+/** Application footer with dynamic year and scroll-to-top action. */
 import React from "react";
 
 export const Footer: React.FC = () => {
+  /** Current year displayed in the copyright line. */
   const year = new Date().getFullYear();
   return (
     <footer className="footer">

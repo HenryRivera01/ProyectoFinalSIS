@@ -1,3 +1,4 @@
+/** Backend property contract representation. */
 export type ApiProperty = {
   registryNumber: number;
   operationType: string;
@@ -14,7 +15,7 @@ export type ApiProperty = {
   propertyType: string;
 };
 
-// Helper unificado para leer dormitorios (evita errores si aún queda código viejo)
+/** Returns bedroom count supporting deprecated field fallback. */
 export function getBedrooms(p: ApiProperty): number {
   return p.numberOfBedrooms ?? p.numberOfBedRooms ?? 0;
 }

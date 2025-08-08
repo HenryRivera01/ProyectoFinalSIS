@@ -1,3 +1,4 @@
+/** Visual card to display summary info about a property (used in grids/listings). */
 import type { ApiProperty } from "../features/properties/types";
 
 type Props = {
@@ -5,6 +6,7 @@ type Props = {
   onClick?: () => void;
 };
 
+/** Normalizes raw enum-like property type to a human readable label. */
 function formatPropertyType(raw: string) {
   return raw
     .toLowerCase()
@@ -14,16 +16,19 @@ function formatPropertyType(raw: string) {
 }
 
 export const PropertyCard = ({ property, onClick }: Props) => {
+  /** First available image or a placeholder fallback. */
   const firstImage =
     (property.images && property.images[0]) ||
     "https://via.placeholder.com/600x360?text=No+Image";
+  /** Human readable property type label. */
   const typeLabel = formatPropertyType(property.propertyType);
+  /** Whether the property is for lease (vs buy). */
   const isLease = property.operationType === "LEASE";
+  /** Optional department name if API injects that structure. */
   const deptName = (property as unknown as { department?: { name: string } })
     ?.department?.name;
-
-  const bedrooms =
-    property.numberOfBedrooms ?? property.numberOfBedRooms ?? 0;
+  /** Bedrooms value supporting legacy optional field. */
+  const bedrooms = property.numberOfBedrooms ?? property.numberOfBedRooms ?? 0;
 
   return (
     <article className="property-card" onClick={onClick}>
@@ -56,9 +61,7 @@ export const PropertyCard = ({ property, onClick }: Props) => {
             </span>
           </li>
           <li className="feature-item beds">
-            <span className="feature-label">
-              {bedrooms} bedrooms
-            </span>
+            <span className="feature-label">{bedrooms} bedrooms</span>
           </li>
         </ul>
 
@@ -78,4 +81,3 @@ export const PropertyCard = ({ property, onClick }: Props) => {
     </article>
   );
 };
-  

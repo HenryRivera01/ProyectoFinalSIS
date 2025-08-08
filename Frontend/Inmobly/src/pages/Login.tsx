@@ -1,3 +1,4 @@
+/** Login page: client-side validation + server authentication + status feedback. */
 import { useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
@@ -9,19 +10,25 @@ import {
 } from "../features/user/validateLogin";
 
 const Login = () => {
+  /** Controlled form inputs. */
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   });
 
+  /** Remote request loading state. */
   const [loading, setLoading] = useState(false);
+  /** Generic message (non-field specific). */
   const [message, setMessage] = useState("");
+  /** Field and credential errors. */
   const [errors, setErrors] = useState<LoginFormErrors>({});
+  /** User-visible status (idle/loading/success/error). */
   const [status, setStatus] = useState<{
     type: "idle" | "loading" | "success" | "error";
     message: string;
   }>({ type: "idle", message: "" });
 
+  /** Handles field changes and clears existing field-level errors. */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -35,6 +42,7 @@ const Login = () => {
     }
   };
 
+  /** Validates client-side, posts credentials, processes HTTP status codes. */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");

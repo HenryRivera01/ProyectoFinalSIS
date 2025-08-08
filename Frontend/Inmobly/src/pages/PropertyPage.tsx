@@ -1,3 +1,4 @@
+/** Property detail page including image gallery and related property suggestions. */
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
@@ -11,6 +12,7 @@ interface PropertyLocationState {
 }
 
 export const PropertyPage = () => {
+  /** Property object (from navigation state or fetched on mount). */
   const { id } = useParams<{ id: string }>();
   const location = useLocation() as Location & {
     state?: PropertyLocationState;
@@ -18,16 +20,23 @@ export const PropertyPage = () => {
   const navigate = useNavigate();
   const stateProp = location.state?.property;
 
+  /** Property object (from navigation state or fetched on mount). */
   const [property, setProperty] = useState<ApiProperty | undefined>(stateProp);
+  /** Currently displayed main image. */
   const [mainImage, setMainImage] = useState<string | undefined>(
     stateProp?.images?.[0]
   );
+  /** Index of the current image in the gallery. */
   const [currentIndex, setCurrentIndex] = useState(0);
+  /** Loading flag (true if a fetch is needed). */
   const [loading, setLoading] = useState(!stateProp);
+  /** Error message if fetch fails. */
   const [error, setError] = useState("");
+  /** Related properties (same propertyType). */
   const [related, setRelated] = useState<ApiProperty[]>([]);
 
   useEffect(() => {
+    /** If no property passed via router state, fetch it by id. */
     if (!property && id) {
       setLoading(true);
       fetchPropertyById(id)
@@ -42,6 +51,7 @@ export const PropertyPage = () => {
   }, [id, property]);
 
   useEffect(() => {
+    /** Fetch related properties limited to same type (excluding itself). */
     if (!property) return;
     fetchProperties()
       .then((all) => {
@@ -56,6 +66,25 @@ export const PropertyPage = () => {
       })
       .catch(() => setRelated([]));
   }, [property]);
+
+  /** Navigate to previous gallery image (wrap-around). */
+  const goPrev = () => {
+    if (!totalImages) return;
+    setCurrentIndex((i) => {
+      const ni = (i - 1 + totalImages) % totalImages;
+      setMainImage(images![ni]);
+      return ni;
+    });
+  };
+  /** Navigate to next gallery image (wrap-around). */
+  const goNext = () => {
+    if (!totalImages) return;
+    setCurrentIndex((i) => {
+      const ni = (i + 1) % totalImages;
+      setMainImage(images![ni]);
+      return ni;
+    });
+  };
 
   if (loading) return <p>Loading property...</p>;
   if (error) return <p>{error}</p>;
@@ -76,23 +105,6 @@ export const PropertyPage = () => {
   const bedrooms = property.numberOfBedrooms ?? property.numberOfBedRooms ?? 0;
 
   const totalImages = images?.length || 0;
-
-  const goPrev = () => {
-    if (!totalImages) return;
-    setCurrentIndex((i) => {
-      const ni = (i - 1 + totalImages) % totalImages;
-      setMainImage(images![ni]);
-      return ni;
-    });
-  };
-  const goNext = () => {
-    if (!totalImages) return;
-    setCurrentIndex((i) => {
-      const ni = (i + 1) % totalImages;
-      setMainImage(images![ni]);
-      return ni;
-    });
-  };
 
   return (
     <main>

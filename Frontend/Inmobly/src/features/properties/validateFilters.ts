@@ -1,3 +1,4 @@
+/** Client-side validation for filter inputs (numeric ranges, enums, city IDs). */
 export type FilterValues = {
   department: string;
   city: string;
@@ -13,6 +14,7 @@ export type FilterValues = {
 
 type City = { id: number; name: string };
 
+/** Returns a map of field errors if any filter value is invalid. */
 export function validateFilters(
   filters: FilterValues,
   validCities?: City[]

@@ -1,3 +1,4 @@
+/** App root: declares the main SPA routing table using React Router. */
 import { Explore } from "./pages/Explore";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -8,6 +9,7 @@ import "./styles/styles.css";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
+  /** Returns the route structure mapping URL paths to page components. */
   return (
     <Routes>
       <Route path="/" element={<Home />} />

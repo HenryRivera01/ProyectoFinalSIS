@@ -1,8 +1,11 @@
+/** Main navigation bar with responsive (mobile toggle) behavior. */
 import { NavLink, Link } from "react-router-dom";
 import { useState } from "react";
 
 export const Navbar = () => {
+  /** Tracks whether the mobile menu is expanded. */
   const [open, setOpen] = useState(false);
+  /** Closes the mobile menu (used after navigation). */
   const close = () => setOpen(false);
 
   return (

@@ -1,3 +1,4 @@
+/** Landing page: introductory content plus a subset of popular properties. */
 import { useEffect, useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -7,19 +8,24 @@ import { PropertyCard } from "../components/PropertyCard";
 import { Footer } from "../components/Footer";
 
 export const Home = () => {
-  const navigate = useNavigate();
+  /** Popular properties (first N entries from full list). */
   const [popular, setPopular] = useState<ApiProperty[]>([]);
+  /** Loading flag for initial fetch. */
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    /** Fetch properties once and retain first six as "popular". */
     fetchProperties()
       .then((data) => setPopular(data.slice(0, 6)))
       .catch(() => setPopular([]))
       .finally(() => setLoading(false));
   }, []);
-
+  /** Navigate with operation=BUY pre-filter. */
   const goBuy = () => navigate("/explore?operation=BUY");
+  /** Navigate with operation=LEASE pre-filter. */
   const goRent = () => navigate("/explore?operation=LEASE");
+  /** Navigate to property registration form. */
   const goSell = () => navigate("/new-property");
 
   return (

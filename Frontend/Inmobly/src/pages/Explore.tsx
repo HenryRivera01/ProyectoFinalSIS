@@ -1,3 +1,4 @@
+/** Explore page: combines server-side (location) and client-side filters for properties. */
 import { Navbar } from "../components/Navbar";
 import { PropertyFilter } from "../components/PropertyFilter";
 import { PropertyCard } from "../components/PropertyCard";
@@ -8,6 +9,7 @@ import { fetchProperties } from "../features/properties/api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getBedrooms } from "../features/properties/types";
 
+/** Baseline (empty) filter state. */
 const initialFilters = {
   department: "",
   city: "",
@@ -22,6 +24,7 @@ const initialFilters = {
 };
 
 export const Explore = () => {
+  /** Active filters including possible operation preset from query string. */
   const [searchParams] = useSearchParams();
   const opParam = searchParams.get("operation");
   const opValue = opParam === "BUY" || opParam === "LEASE" ? opParam : "";
@@ -29,15 +32,20 @@ export const Explore = () => {
     ...initialFilters,
     operation: opValue,
   });
+  /** Properties retrieved from backend (refreshed on department/city change). */
   const [properties, setProperties] = useState<ApiProperty[]>([]);
+  /** Client-side filtered subset (other criteria). */
   const [filteredProperties, setFilteredProperties] = useState<ApiProperty[]>(
     []
   );
+  /** Loading state for fetches. */
   const [loading, setLoading] = useState(true);
+  /** Info message (count or loading text). */
   const [infoMessage, setInfoMessage] = useState("");
 
   // Carga inicial (todas las propiedades)
   useEffect(() => {
+    /** Initial load: fetches all properties without location filters. */
     setLoading(true);
     fetchProperties()
       .then((data) => setProperties(data))
@@ -50,6 +58,7 @@ export const Explore = () => {
 
   // Refetch cuando cambia department o city
   useEffect(() => {
+    /** When location filters change: fetch from backend (or reset to all if cleared). */
     // Si no hay department y no hay city => cargar todo (reset)
     if (!filters.department && !filters.city) {
       setLoading(true);
@@ -76,6 +85,7 @@ export const Explore = () => {
 
   // Filtrado adicional en cliente (resto de filtros)
   useEffect(() => {
+    /** Applies remaining (non-location) filters locally: type, operation, ranges, beds/baths. */
     setFilteredProperties(
       properties.filter((p) => {
         const minBedrooms = filters.bedrooms ? Number(filters.bedrooms) : 0;
@@ -110,6 +120,7 @@ export const Explore = () => {
   ]);
 
   useEffect(() => {
+    /** Updates informational message based on loading state and filtered result count. */
     if (loading) {
       setInfoMessage("Loading properties...");
     } else {
@@ -120,6 +131,7 @@ export const Explore = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    /** Ensures operation query param stays in sync with internal state if changed externally. */
     if (opValue && opValue !== filters.operation) {
       setFilters((f) => ({ ...f, operation: opValue }));
     }
